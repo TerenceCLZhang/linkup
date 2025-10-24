@@ -6,8 +6,8 @@ const PORT = 8080;
 
 app.use(morgan("tiny"));
 
-app.get("/", (_req, res) => {
-  res.send("Hello, World!");
+app.use((req, res) => {
+  res.send("Server is running!");
 });
 
 app.listen(PORT, () => {
