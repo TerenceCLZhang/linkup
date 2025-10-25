@@ -2,17 +2,13 @@
   "compilerOptions": {
     "target": "es2022",
     "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "lib": ["es2022"],
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "sourceMap": true,
-    "declaration": true
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
