@@ -3,6 +3,9 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import { handleJWT } from "../utils/handleJWT.js";
 import { sendEmail } from "../utils/email.js";
+import crypto from "crypto";
+import { ENV } from "../config/env.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const signUp = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -35,7 +38,7 @@ export const signUp = async (req: Request, res: Response) => {
       email,
       password: hashedPassword,
       verificationToken,
-      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
+      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 1 day
     });
 
     await user.save();
@@ -69,7 +72,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   if (!enteredToken) {
     return res
       .status(400)
-      .json({ success: false, message: "Token is required." });
+      .json({ success: false, message: "Token not provided." });
   }
 
   try {
@@ -82,7 +85,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "Incorrect or exper" });
+        .json({ success: false, message: "Incorrect or expiered token." });
     }
 
     // Clear email verification fields
@@ -113,7 +116,7 @@ export const logIn = async (req: Request, res: Response) => {
   if (!email || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Missing email and/or password." });
+      .json({ success: false, message: "Email and/or password not provided." });
   }
 
   try {
@@ -123,17 +126,17 @@ export const logIn = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User with this email does not exist.",
+        message: "Incorrect email and/or password.",
       });
     }
 
     // Check if entered password is equal to stored password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res
         .status(401)
-        .json({ success: false, message: "Invalid password." });
+        .json({ success: false, message: "Incorrect email and/or password." });
     }
 
     handleJWT(res, user._id);
@@ -161,5 +164,139 @@ export const logOut = async (req: Request, res: Response) => {
 };
 
 export const forgotPassword = async (req: Request, res: Response) => {
-  
-}
+  const { email } = req.body;
+
+  // Check if email present
+  if (!email) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email not provided." });
+  }
+
+  try {
+    // Find user with specified email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    // Generate reset token
+    user.resetPasswordToken = crypto.randomBytes(20).toString("hex");
+    user.resetPasswordTokenExpiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await user.save();
+
+    sendEmail({
+      to: user.email,
+      name: user.name,
+      subject: "LinkUp - Reset Password",
+      text: `Click on the link to reset your password: ${ENV.CLIENT_URL}/reset-password/${user.resetPasswordToken}`,
+    });
+
+    return res.json({ success: true, message: "Password reset email sent." });
+  } catch (error) {
+    console.error("Error in forgot password", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  // Check if token and password are present
+  if (!token) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Token not provided." });
+  }
+
+  if (!password) {
+    return res
+      .status(404)
+      .json({ success: false, message: "New password not provided." });
+  }
+
+  try {
+    // Check if the token is valid
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid or expiered token." });
+    }
+
+    // Set new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpiresAt = undefined;
+
+    await user.save();
+
+    sendEmail({
+      to: user.email,
+      name: user.name,
+      subject: "LinkUp - Password Reset Successful!",
+      text: `Your password has been successfully reset.\n\nIf you did not make this change, please contact support immediately.`,
+    });
+
+    return res.json({ success: true, message: "Password reset successful." });
+  } catch (error) {
+    console.error("Error resetting password", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const updateAvatar = async (req: Request, res: Response) => {
+  const { avatar } = req.body;
+  const userId = req.user!._id;
+
+  // Check if avatar is provided
+  if (!avatar) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Avatar not provided." });
+  }
+
+  try {
+    // Upload to cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(avatar, {
+      folder: "linkup/avatars",
+    });
+
+    // Update DB with cloudinary url
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        avatar: uploadResponse.secure_url,
+      },
+      { new: true }
+    );
+
+    return res.json({
+      success: true,
+      message: "User avatar successfully updated.",
+      user,
+    });
+  } catch (error) {
+    console.error("Error with updating avatar");
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const checkAuth = (req: Request, res: Response) => {
+  try {
+    return res.json({ success: true, user: req.user });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
