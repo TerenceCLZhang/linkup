@@ -43,8 +43,6 @@ export const signUp = async (req: Request, res: Response) => {
 
     await user.save();
 
-    handleJWT(res, user._id);
-
     sendEmail({
       to: email,
       name,
@@ -95,6 +93,8 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await user.save();
 
+    handleJWT(res, user._id);
+
     sendEmail({
       to: user.email,
       name: user.name,
@@ -137,6 +137,13 @@ export const logIn = async (req: Request, res: Response) => {
       return res
         .status(401)
         .json({ success: false, message: "Incorrect email and/or password." });
+    }
+
+    // Check if email is verified
+    if (!user.isVerified) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User is not verified." });
     }
 
     handleJWT(res, user._id);
