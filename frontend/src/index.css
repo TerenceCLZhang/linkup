@@ -1,2 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
 @import "tailwindcss";
-@plugin "daisyui";
+
+@theme {
+  --font-poppins: "Poppins", sans-serif;
+
+  --color-primary: #007acc;
+  --color-secondary: #f4f4f4;
+  --color-accent: #00509e;
+}
+
+@layer base {
+  body {
+    @apply min-h-screen font-poppins;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-bold;
+  }
+
+  form {
+    @apply max-w-xl space-y-5 w-full;
+  }
+
+  input {
+    @apply border rounded-lg p-2 w-full;
+  }
+
+  button {
+    @apply bg-secondary px-5 py-2 rounded-md font-medium cursor-pointer hover:opacity-70 transition duration-100 ease-in;
+  }
+}
+
+@layer components {
+  .fieldset {
+    @apply flex flex-col gap-1;
+  }
+
+  .button-primary {
+    @apply bg-primary text-secondary;
+  }
+
+  .form-icon {
+    @apply absolute top-1/2 -translate-y-1/2 left-2 size-5;
+  }
+
+  .form-input {
+    @apply px-10;
+  }
+
+  .form-error {
+    @apply text-red-500 text-sm mt-1;
+  }
+
+  .link-blue {
+    @apply text-primary hover:opacity-80 underline;
+  }
+}
