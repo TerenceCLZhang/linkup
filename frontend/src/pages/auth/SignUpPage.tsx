@@ -9,6 +9,7 @@ const SignUpPage = () => {
           <h2 className="text-4xl">Sign Up</h2>
           <p>Let’s get you linked up!</p>
         </div>
+
         <SignUpForm />
 
         <p className="mt-5">

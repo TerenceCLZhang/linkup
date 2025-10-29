@@ -27,11 +27,11 @@
   }
 
   input {
-    @apply border rounded-lg p-2 w-full;
+    @apply border rounded-lg p-2 w-full h-full;
   }
 
   button {
-    @apply bg-secondary px-5 py-2 rounded-md font-medium cursor-pointer hover:opacity-70 transition duration-100 ease-in;
+    @apply bg-secondary px-5 py-2 rounded-md font-medium cursor-pointer hover:opacity-70 transition duration-100 ease-in disabled:opacity-50 disabled:cursor-not-allowed;
   }
 }
 
@@ -52,11 +52,15 @@
     @apply px-10;
   }
 
-  .form-error {
+  .input-error {
     @apply text-red-500 text-sm mt-1;
   }
 
   .link-blue {
     @apply text-primary hover:opacity-80 underline;
+  }
+
+  .form-error {
+    @apply text-red-500 font-semibold mt-2 text-base;
   }
 }

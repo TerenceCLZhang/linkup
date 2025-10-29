@@ -1,6 +1,10 @@
 import { Settings } from "lucide-react";
+import { useAuthStore } from "../store/useAuthStore";
+import LogOutBtn from "./auth/LogOutBtn";
 
 const NavBar = () => {
+  const { authUser } = useAuthStore();
+
   return (
     <header className="container fixed w-full">
       <div className="flex items-center justify-between py-5">
@@ -18,6 +22,12 @@ const NavBar = () => {
         </h1>
 
         <div className="flex gap-3">
+          {authUser && (
+            <>
+              <LogOutBtn />
+            </>
+          )}
+
           <button
             type="button"
             className="btn p-2"

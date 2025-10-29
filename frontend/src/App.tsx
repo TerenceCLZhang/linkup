@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LogInPage from "./pages/auth/LogInPage";
 import SignUpPage from "./pages/auth/SignUpPage";
@@ -8,11 +8,38 @@ import NavBar from "./components/NavBar";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
-import HomePage from "./pages/HomePage";
-import { ProtectedRoute, PublicRoute } from "./components/AuthWrappers";
+import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import MessagesPage from "./pages/MessagesPage";
+
+// Routes that require authentication
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { authUser } = useAuthStore();
+
+  if (!authUser) return <Navigate to={"/login"} replace />;
+
+  if (!authUser.isVerified) return <Navigate to={"/verify-email"} replace />;
+
+  return children;
+};
+
+// Redirect authenticated users to messages page
+const RedirectAuthenticatedUser = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const { authUser } = useAuthStore();
+
+  if (authUser && authUser.isVerified)
+    return <Navigate to={"/messages"} replace />;
+
+  return children;
+};
 
 const App = () => {
-  const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
+  const { isCheckingAuth, checkAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -33,32 +60,63 @@ const App = () => {
 
       <main className="flex items-center justify-center flex-col min-h-screen">
         <Routes>
-          {/* Root route */}
-          <Route path="/" element={authUser ? <HomePage /> : <LandingPage />} />
-
           {/* Public routes */}
+          <Route
+            path="/"
+            element={
+              <RedirectAuthenticatedUser>
+                <LandingPage />
+              </RedirectAuthenticatedUser>
+            }
+          />
           <Route
             path="/login"
             element={
-              <PublicRoute user={authUser}>
+              <RedirectAuthenticatedUser>
                 <LogInPage />
-              </PublicRoute>
+              </RedirectAuthenticatedUser>
             }
           />
           <Route
             path="/signup"
             element={
-              <PublicRoute user={authUser}>
+              <RedirectAuthenticatedUser>
                 <SignUpPage />
-              </PublicRoute>
+              </RedirectAuthenticatedUser>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <RedirectAuthenticatedUser>
+                <ForgotPasswordPage />
+              </RedirectAuthenticatedUser>
+            }
+          />
+          <Route
+            path="/reset-password/:token"
+            element={
+              <RedirectAuthenticatedUser>
+                <ResetPasswordPage />
+              </RedirectAuthenticatedUser>
             }
           />
 
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+
           {/* Protected routes */}
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <MessagesPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={
-              <ProtectedRoute user={authUser}>
+              <ProtectedRoute>
                 <ProfilePage />
               </ProtectedRoute>
             }

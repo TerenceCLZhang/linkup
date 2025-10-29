@@ -2,19 +2,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { Link, useNavigate } from "react-router-dom";
+import z from "zod";
+import { useAuthStore } from "../../store/useAuthStore";
+import FormSubmitBtn from "./FormSubmitBtn";
 
 const logInFormSchema = z.object({
   email: z.email("Invalid email address."),
-  password: z.string().min(1, "Required."),
+  password: z.string().min(1, "Password required."),
 });
+
+type logInFormType = z.infer<typeof logInFormSchema>;
 
 const LogInForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof logInFormSchema>>({
+  } = useForm<logInFormType>({
     resolver: zodResolver(logInFormSchema),
     defaultValues: {
       email: "",
@@ -23,9 +28,17 @@ const LogInForm = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const onSubmit = (data: z.infer<typeof logInFormSchema>) => {
-    console.log(data);
+  const { logIn, error, isLoading } = useAuthStore();
+
+  const onSubmit = async (data: logInFormType) => {
+    try {
+      await logIn(data.email, data.password);
+      navigate("/verify-email");
+    } catch (error) {
+      console.error("Error logging in", error);
+    }
   };
 
   return (
@@ -39,11 +52,14 @@ const LogInForm = () => {
             id="email"
             type="text"
             className="form-input"
+            inputMode="email"
+            disabled={isLoading}
+            aria-disabled={isLoading}
             {...register("email")}
           />
         </div>
 
-        {errors.email && <p className="form-error">{errors.email.message}</p>}
+        {errors.email && <p className="input-error">{errors.email.message}</p>}
       </fieldset>
 
       {/* Password */}
@@ -55,6 +71,8 @@ const LogInForm = () => {
             id="password"
             type={showPassword ? "text" : "password"}
             className="form-input"
+            disabled={isLoading}
+            aria-disabled={isLoading}
             {...register("password")}
           />
           <button
@@ -72,13 +90,17 @@ const LogInForm = () => {
         </div>
 
         {errors.password && (
-          <p className="form-error">{errors.password.message}</p>
+          <p className="input-error">{errors.password.message}</p>
         )}
+
+        <Link to={"/forgot-password"} className="text-sm link-blue mt-1">
+          Forgot Password
+        </Link>
       </fieldset>
 
-      <button type="submit" className="button-primary w-full mt-2">
-        Log In
-      </button>
+      {error && <p className="form-error">{error}</p>}
+
+      <FormSubmitBtn loadingText="Logging In" notLoadingText="Log In" />
     </form>
   );
 };

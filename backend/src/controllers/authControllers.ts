@@ -19,11 +19,18 @@ export const signUp = async (req: Request, res: Response) => {
 
   // Check if user with given email exists
   const userExists = await User.findOne({ email });
+
   if (userExists) {
-    return res.status(409).json({
-      success: false,
-      message: "User with that email already exists.",
-    });
+    // Verified user already exists
+    if (userExists.isVerified) {
+      return res.status(409).json({
+        success: false,
+        message: "User with that email already exists.",
+      });
+    }
+
+    // Delete preveious record
+    await User.deleteOne({ email });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -42,6 +49,8 @@ export const signUp = async (req: Request, res: Response) => {
     });
 
     await user.save();
+
+    handleJWT(res, user._id);
 
     sendEmail({
       to: email,
@@ -64,10 +73,10 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
-  const { enteredToken } = req.body;
+  const { code } = req.body;
 
   // Check if token is present
-  if (!enteredToken) {
+  if (!code) {
     return res
       .status(400)
       .json({ success: false, message: "Token not provided." });
@@ -76,7 +85,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   try {
     // Check whether token exists and is valid
     const user = await User.findOne({
-      verificationToken: enteredToken,
+      verificationToken: code,
       verificationTokenExpiresAt: { $gt: Date.now() },
     });
 
@@ -93,16 +102,18 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await user.save();
 
-    handleJWT(res, user._id);
-
     sendEmail({
       to: user.email,
       name: user.name,
       subject: "LinkUp - Welcome!",
-      text: `Welcome to LinkUp!\n\nThis is a personal project made by Terence Zhang as a Slack/Discord clone, creating using the MERN (MongoDB, Express.js, React.js, Node.js) stack.`,
+      text: `Welcome to LinkUp!\n\nThis is a personal project made by Terence Zhang as an instant messaging app, creating using the MERN (MongoDB, Express.js, React.js, Node.js) stack.`,
     });
 
-    return res.json({ success: true, message: "Email successfully verified." });
+    return res.json({
+      success: true,
+      message: "Email successfully verified.",
+      user,
+    });
   } catch (error) {
     console.error("Error validating email", error);
     return res.status(500).json({ success: false, message: "Server error." });
@@ -131,7 +142,7 @@ export const logIn = async (req: Request, res: Response) => {
     }
 
     // Check if entered password is equal to stored password
-    const isPasswordValid = bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res

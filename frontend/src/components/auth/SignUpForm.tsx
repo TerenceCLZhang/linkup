@@ -2,7 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import z from "zod";
+import { useAuthStore } from "../../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import FormSubmitBtn from "./FormSubmitBtn";
 
 const signUpFormSchema = z.object({
   name: z.string().trim().min(1, "Full name is required."),
@@ -10,12 +13,14 @@ const signUpFormSchema = z.object({
   password: z.string().min(6, "Password must be at least six characters."),
 });
 
+type SignUpFormType = z.infer<typeof signUpFormSchema>;
+
 const SignUpForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof signUpFormSchema>>({
+  } = useForm<SignUpFormType>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       name: "",
@@ -25,9 +30,17 @@ const SignUpForm = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const onSubmit = (data: z.infer<typeof signUpFormSchema>) => {
-    console.log(data);
+  const { signUp, error, isLoading } = useAuthStore();
+
+  const onSubmit = async (data: SignUpFormType) => {
+    try {
+      await signUp(data.name, data.email, data.password);
+      navigate("/verify-email");
+    } catch (error) {
+      console.error("Error signing up", error);
+    }
   };
 
   return (
@@ -42,11 +55,13 @@ const SignUpForm = () => {
             id="name"
             type="text"
             className="form-input"
+            disabled={isLoading}
+            aria-disabled={isLoading}
             {...register("name")}
           />
         </div>
 
-        {errors.name && <p className="form-error">{errors.name.message}</p>}
+        {errors.name && <p className="input-error">{errors.name.message}</p>}
       </fieldset>
 
       {/* Email Address */}
@@ -58,11 +73,14 @@ const SignUpForm = () => {
             id="email"
             type="text"
             className="form-input"
+            inputMode="email"
+            disabled={isLoading}
+            aria-disabled={isLoading}
             {...register("email")}
           />
         </div>
 
-        {errors.email && <p className="form-error">{errors.email.message}</p>}
+        {errors.email && <p className="input-error">{errors.email.message}</p>}
       </fieldset>
 
       {/* Password */}
@@ -74,36 +92,33 @@ const SignUpForm = () => {
             id="password"
             type={showPassword ? "text" : "password"}
             className="form-input"
+            disabled={isLoading}
+            aria-disabled={isLoading}
             {...register("password")}
           />
           <button
             type="button"
             className="bg-transparent p-0 absolute right-2 top-1/2 -translate-y-1/2"
+            disabled={isLoading}
+            aria-disabled={isLoading}
             onClick={() => setShowPassword(!showPassword)}
           >
-            <button
-              type="button"
-              className="bg-transparent p-0 absolute right-2 top-1/2 -translate-y-1/2"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Hide Password" : "Show Password"}
-            >
-              {showPassword ? (
-                <EyeOff className="size-5" />
-              ) : (
-                <Eye className="size-5" />
-              )}
-            </button>
+            {showPassword ? (
+              <EyeOff className="size-5" />
+            ) : (
+              <Eye className="size-5" />
+            )}
           </button>
         </div>
 
         {errors.password && (
-          <p className="form-error">{errors.password.message}</p>
+          <p className="input-error">{errors.password.message}</p>
         )}
       </fieldset>
 
-      <button type="submit" className="button-primary w-full mt-2">
-        Sign Up
-      </button>
+      {error && <p className="form-error">{error}</p>}
+
+      <FormSubmitBtn loadingText="Signing Up" notLoadingText="Sign Up" />
     </form>
   );
 };

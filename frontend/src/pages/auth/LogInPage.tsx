@@ -13,6 +13,7 @@ const LogInPage = () => {
           <h2 className="text-4xl">Log In</h2>
           <p>Hey there! Great to see you again.</p>
         </div>
+
         <LogInForm />
 
         <p className="mt-5">
