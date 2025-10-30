@@ -1,6 +1,7 @@
-import { Settings } from "lucide-react";
+import { Settings, User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import LogOutBtn from "./auth/LogOutBtn";
+import { Link } from "react-router-dom";
 
 const NavBar = () => {
   const { authUser } = useAuthStore();
@@ -24,16 +25,17 @@ const NavBar = () => {
         <div className="flex gap-3">
           {authUser && (
             <>
+              <button>
+                <Link to={"/profile"} className="button-icon-text">
+                  <User /> Profile
+                </Link>
+              </button>
+
               <LogOutBtn />
             </>
           )}
 
-          <button
-            type="button"
-            className="btn p-2"
-            aria-label="Settings"
-            title="Settings"
-          >
+          <button type="button" aria-label="Settings" title="Settings">
             <Settings />
           </button>
         </div>

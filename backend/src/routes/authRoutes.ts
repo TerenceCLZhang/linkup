@@ -7,6 +7,7 @@ import {
   resetPassword,
   signUp,
   updateAvatar,
+  updateName,
   verifyEmail,
 } from "../controllers/authControllers.js";
 import { protectRoute } from "../middleware/auth/protectRoute.js";
@@ -22,6 +23,7 @@ router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
-router.put("/update-avatar", protectRoute, updateAvatar);
+router.patch("/update-name", protectRoute, updateName);
+router.patch("/update-avatar", protectRoute, updateAvatar);
 
 export default router;

@@ -289,6 +289,8 @@ export const updateAvatar = async (req: Request, res: Response) => {
     // Upload to cloudinary
     const uploadResponse = await cloudinary.uploader.upload(avatar, {
       folder: "linkup/avatars",
+      public_id: `${userId}-avatar`,
+      overwrite: true,
     });
 
     // Update DB with cloudinary url
@@ -306,7 +308,39 @@ export const updateAvatar = async (req: Request, res: Response) => {
       user,
     });
   } catch (error) {
-    console.error("Error with updating avatar");
+    console.error("Error with updating avatar", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const updateName = async (req: Request, res: Response) => {
+  const { name } = req.body;
+  const userId = req.user!._id;
+
+  // Check if new name is provided
+  if (!name) {
+    return res
+      .status(400)
+      .json({ success: false, message: "New name not provided." });
+  }
+
+  try {
+    // Update DB with new name
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        name,
+      },
+      { new: true }
+    );
+
+    return res.json({
+      success: true,
+      message: "Name successfully updated.",
+      user,
+    });
+  } catch (error) {
+    console.error("Error changing name");
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };

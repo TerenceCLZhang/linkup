@@ -2,12 +2,14 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import type { User } from "../types/User";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 interface AuthStore {
   authUser: User | null;
   isLoading: boolean;
   error: string | null;
   isCheckingAuth: boolean;
+  isUpdatingAvatar: boolean;
   checkAuth: () => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   verifyEmail: (code: string) => Promise<void>;
@@ -15,6 +17,8 @@ interface AuthStore {
   logIn: (email: string, password: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (password: string, token: string) => Promise<void>;
+  updateAvatar: (avatar: string) => Promise<void>;
+  updateName: (name: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -22,6 +26,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isLoading: false,
   error: null,
   isCheckingAuth: true,
+  isUpdatingAvatar: false,
 
   checkAuth: async () => {
     try {
@@ -175,6 +180,56 @@ export const useAuthStore = create<AuthStore>((set) => ({
       }
 
       set({ error: message });
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updateAvatar: async (avatar: string) => {
+    set({ isUpdatingAvatar: true, error: null });
+
+    try {
+      await axiosInstance.patch(`/auth/update-avatar`, {
+        avatar,
+      });
+      toast.success("Avatar successfully updated.");
+    } catch (error: unknown) {
+      let message = "Something went wrong.";
+
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || error.message || message;
+      } else if (error instanceof Error) {
+        message = error.message || message;
+      }
+
+      set({ error: message });
+      toast.error(message);
+      throw error;
+    } finally {
+      set({ isUpdatingAvatar: false });
+    }
+  },
+
+  updateName: async (name: string) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      await axiosInstance.patch(`/auth/update-name`, {
+        name,
+      });
+      toast.success("Name successfully updated.");
+    } catch (error: unknown) {
+      let message = "Something went wrong.";
+
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || error.message || message;
+      } else if (error instanceof Error) {
+        message = error.message || message;
+      }
+
+      set({ error: message });
+      toast.error(message);
       throw error;
     } finally {
       set({ isLoading: false });

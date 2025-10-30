@@ -27,11 +27,11 @@
   }
 
   input {
-    @apply border rounded-lg p-2 w-full h-full;
+    @apply border rounded-lg p-2 w-full h-full disabled:opacity-50;
   }
 
   button {
-    @apply bg-secondary px-5 py-2 rounded-md font-medium cursor-pointer hover:opacity-70 transition duration-100 ease-in disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply flex items-center justify-center bg-secondary px-5 py-2 rounded-md font-medium cursor-pointer hover:opacity-70 transition duration-100 ease-in disabled:opacity-50 disabled:cursor-not-allowed;
   }
 }
 
@@ -62,5 +62,9 @@
 
   .form-error {
     @apply text-red-500 font-semibold mt-2 text-base;
+  }
+
+  .button-icon-text {
+    @apply inline-flex gap-2;
   }
 }

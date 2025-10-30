@@ -13,14 +13,14 @@ const signUpFormSchema = z.object({
   password: z.string().min(6, "Password must be at least six characters."),
 });
 
-type SignUpFormType = z.infer<typeof signUpFormSchema>;
+type signUpFormType = z.infer<typeof signUpFormSchema>;
 
 const SignUpForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpFormType>({
+  } = useForm<signUpFormType>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       name: "",
@@ -34,7 +34,7 @@ const SignUpForm = () => {
 
   const { signUp, error, isLoading } = useAuthStore();
 
-  const onSubmit = async (data: SignUpFormType) => {
+  const onSubmit = async (data: signUpFormType) => {
     try {
       await signUp(data.name, data.email, data.password);
       navigate("/verify-email");

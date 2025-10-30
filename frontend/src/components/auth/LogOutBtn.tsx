@@ -11,13 +11,14 @@ const LogOutBtn = () => {
     try {
       await logOut();
       navigate("/login");
+      toast.success("Logged Out Successfully.");
     } catch {
       toast.error(error);
     }
   };
 
   return (
-    <button className="inline-flex gap-2" onClick={handleLogOut}>
+    <button className="button-icon-text" onClick={handleLogOut}>
       <LogOut /> Log Out
     </button>
   );

@@ -6,6 +6,8 @@ import authRoutes from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import messageRoutes from "./routes/messageRoutes.js";
 import cors from "cors";
+import { rateLimit } from "express-rate-limit";
+import bodyParser from "body-parser";
 
 const app = express();
 
@@ -15,6 +17,17 @@ app.use(
     credentials: true,
   })
 );
+app.use(
+  rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 100, // ~1.6 req/s
+    standardHeaders: true,
+    legacyHeaders: false,
+    message:
+      "Too many requests sent from this IP. Please wait a few seconds and try again.",
+  })
+);
+app.use(bodyParser.json({ limit: "10mb" }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));

@@ -9,6 +9,6 @@ export interface User {
   resetPasswordTokenExpiresAt?: Date;
   verificationToken?: string;
   verificationTokenExpiresAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
