@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import FormSubmitBtn from "./FormSubmitBtn";
 
@@ -25,7 +24,7 @@ const VerifyEmailForm = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const code = watch("code");
 
-  const { verifyEmail, error, isLoading } = useAuthStore();
+  const { verifyEmail, isLoading } = useAuthStore();
   const navigate = useNavigate();
 
   // Auto submit when all fields are filled
@@ -42,8 +41,7 @@ const VerifyEmailForm = () => {
     try {
       await verifyEmail(verificationCode);
       navigate("/messages");
-      toast.success("Email successfully verified.");
-    } catch {
+    } catch (error) {
       console.error("Error verifying email", error);
     }
   };
@@ -121,8 +119,6 @@ const VerifyEmailForm = () => {
             />
           ))}
       </div>
-
-      {error && <p className="form-error">{error}</p>}
 
       <FormSubmitBtn
         loadingText="Verifying"

@@ -30,7 +30,7 @@ const LogInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const { logIn, error, isLoading } = useAuthStore();
+  const { logIn, isLoading } = useAuthStore();
 
   const onSubmit = async (data: logInFormType) => {
     try {
@@ -97,8 +97,6 @@ const LogInForm = () => {
           Forgot Password
         </Link>
       </fieldset>
-
-      {error && <p className="form-error">{error}</p>}
 
       <FormSubmitBtn loadingText="Logging In" notLoadingText="Log In" />
     </form>

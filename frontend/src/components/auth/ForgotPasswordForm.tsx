@@ -27,7 +27,7 @@ const ForgotPasswordForm = ({
     },
   });
 
-  const { forgotPassword, error, isLoading } = useAuthStore();
+  const { forgotPassword, isLoading } = useAuthStore();
 
   const onSubmit = async (data: forgotPasswordFormType) => {
     try {
@@ -59,8 +59,6 @@ const ForgotPasswordForm = ({
           <p className="input-error text-left">{errors.email.message}</p>
         )}
       </fieldset>
-
-      {error && <p className="form-error">{error}</p>}
 
       <FormSubmitBtn
         loadingText="Sending..."

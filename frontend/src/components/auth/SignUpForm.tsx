@@ -32,7 +32,7 @@ const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const { signUp, error, isLoading } = useAuthStore();
+  const { signUp, isLoading } = useAuthStore();
 
   const onSubmit = async (data: signUpFormType) => {
     try {
@@ -115,8 +115,6 @@ const SignUpForm = () => {
           <p className="input-error">{errors.password.message}</p>
         )}
       </fieldset>
-
-      {error && <p className="form-error">{error}</p>}
 
       <FormSubmitBtn loadingText="Signing Up" notLoadingText="Sign Up" />
     </form>

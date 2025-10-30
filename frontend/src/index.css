@@ -60,10 +60,6 @@
     @apply text-primary hover:opacity-80 underline;
   }
 
-  .form-error {
-    @apply text-red-500 font-semibold mt-2 text-base;
-  }
-
   .button-icon-text {
     @apply inline-flex gap-2;
   }

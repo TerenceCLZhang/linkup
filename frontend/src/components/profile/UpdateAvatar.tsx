@@ -28,7 +28,7 @@ const UpdateAvatar = () => {
         setUploadedAvatar(base64Image);
       };
     } catch (error) {
-      console.error(error);
+      console.error("Error updating name", error);
     }
   };
 

@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 interface AuthStore {
   authUser: User | null;
   isLoading: boolean;
-  error: string | null;
   isCheckingAuth: boolean;
   isUpdatingAvatar: boolean;
   checkAuth: () => Promise<void>;
@@ -41,7 +40,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   signUp: async (name: string, email: string, password: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
 
     try {
       const res = await axiosInstance.post("/auth/signup", {
@@ -60,7 +59,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
+      toast.error(message);
       throw error;
     } finally {
       set({ isLoading: false });
@@ -68,7 +67,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   verifyEmail: async (code: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
 
     try {
       const res = await axiosInstance.post("/auth/verify-email", {
@@ -76,6 +75,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
 
       set({ authUser: res.data.user });
+      toast.success("Email successfully verified.");
     } catch (error) {
       let message = "Something went wrong.";
 
@@ -85,7 +85,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
+      toast.error(message);
       throw error;
     } finally {
       set({ isLoading: false });
@@ -93,7 +93,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   logOut: async () => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
 
     try {
       await axiosInstance.post("/auth/logout");
@@ -107,7 +107,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
+      toast.error(message);
       throw error;
     } finally {
       set({ isLoading: false });
@@ -115,7 +115,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   logIn: async (email: string, password: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
 
     try {
       const res = await axiosInstance.post("/auth/login", {
@@ -133,7 +133,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
+      toast.error(message);
       throw error;
     } finally {
       set({ isLoading: false });
@@ -141,7 +141,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   forgotPassword: async (email: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
 
     try {
       await axiosInstance.post("/auth/forgot-password", {
@@ -156,7 +156,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
+      toast.error(message);
       throw error;
     } finally {
       set({ isLoading: false });
@@ -164,7 +164,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   resetPassword: async (password: string, token: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
 
     try {
       await axiosInstance.post(`/auth/reset-password/${token}`, {
@@ -179,7 +179,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
+      toast.error(message);
       throw error;
     } finally {
       set({ isLoading: false });
@@ -187,7 +187,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   updateAvatar: async (avatar: string) => {
-    set({ isUpdatingAvatar: true, error: null });
+    set({ isUpdatingAvatar: true });
 
     try {
       await axiosInstance.patch(`/auth/update-avatar`, {
@@ -203,7 +203,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
       toast.error(message);
       throw error;
     } finally {
@@ -212,7 +211,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   updateName: async (name: string) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
 
     try {
       await axiosInstance.patch(`/auth/update-name`, {
@@ -228,7 +227,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
         message = error.message || message;
       }
 
-      set({ error: message });
       toast.error(message);
       throw error;
     } finally {

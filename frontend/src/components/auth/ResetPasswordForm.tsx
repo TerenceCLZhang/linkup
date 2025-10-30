@@ -40,7 +40,7 @@ const ResetPasswordForm = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { resetPassword, isLoading, error } = useAuthStore();
+  const { resetPassword, isLoading } = useAuthStore();
 
   const onSubmit = async (data: resetPasswordFormType) => {
     try {
@@ -120,8 +120,6 @@ const ResetPasswordForm = ({
           <p className="input-error">{errors.confirmPassword.message}</p>
         )}
       </fieldset>
-
-      {error && <p className="form-error">{error}</p>}
 
       <FormSubmitBtn
         loadingText="Updating..."
