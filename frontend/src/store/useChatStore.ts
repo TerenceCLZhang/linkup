@@ -70,7 +70,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           image,
         }
       );
-      set({ messages: [...get().messages, res.data.messages] });
+      set({ messages: [...get().messages, res.data.message] });
     } catch (error) {
       storeAPIErrors(error);
     }

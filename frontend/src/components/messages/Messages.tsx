@@ -29,7 +29,7 @@ export const LeftMessage = ({
           </span>
         </div>
 
-        <p>{message.text}</p>
+        <p className="whitespace-pre-wrap">{message.text}</p>
       </div>
     </div>
   );
@@ -65,7 +65,7 @@ export const RightMessage = ({
             </div>
           )}
 
-          <p>{message.text}</p>
+          <p className="whitespace-pre-wrap">{message.text}</p>
         </div>
       </div>
 

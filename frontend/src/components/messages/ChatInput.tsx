@@ -22,8 +22,11 @@ const ChatInput = () => {
     },
   });
 
+  const [inputNumLines, setInputNumLines] = useState(1);
   const [imagePreview, setImagePreview] = useState("");
   const { selectedUser, sendMessage } = useChatStore();
+
+  const INPUT_MAX_LINES = 3;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -106,12 +109,42 @@ const ChatInput = () => {
           <label htmlFor="text" className="sr-only">
             Text
           </label>
-          <input
+          <textarea
             id="text"
-            type="text"
             placeholder={`Send a message to ${selectedUser?.name}`}
-            className="border-neutral-200"
-            {...register("text")}
+            className="border-neutral-200 resize-none"
+            rows={inputNumLines}
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
+            onKeyDown={(e) => {
+              // Send new message
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(onSubmit)();
+              }
+
+              // New line
+              if (
+                e.key === "Enter" &&
+                e.shiftKey &&
+                inputNumLines < INPUT_MAX_LINES
+              ) {
+                setInputNumLines((prev) => prev + 1);
+              }
+            }}
+            {...(register("text"),
+            {
+              onChange: (e) => {
+                register("text").onChange(e);
+
+                const val = e.target.value;
+                setValue("text", val);
+                setInputNumLines(
+                  Math.min(val.split("\n").length, INPUT_MAX_LINES)
+                );
+              },
+            })}
           />
         </fieldset>
 

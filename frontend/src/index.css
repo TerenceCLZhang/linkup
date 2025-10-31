@@ -30,7 +30,8 @@
     @apply flex flex-col gap-1 w-full;
   }
 
-  input {
+  input,
+  textarea {
     @apply border rounded-lg p-2 w-full h-full disabled:opacity-50;
   }
 
