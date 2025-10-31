@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const LogOutBtn = () => {
-  const { logOut, error } = useAuthStore();
+  const { logOut } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogOut = async () => {
@@ -12,8 +12,8 @@ const LogOutBtn = () => {
       await logOut();
       navigate("/login");
       toast.success("Logged Out Successfully.");
-    } catch {
-      toast.error(error);
+    } catch (error) {
+      console.error("Error logging out", error);
     }
   };
 
