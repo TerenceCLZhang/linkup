@@ -6,7 +6,7 @@ import { Mail, User } from "lucide-react";
 import FormSubmitBtn from "../auth/FormSubmitBtn";
 
 const profileFormSchema = z.object({
-  name: z.string().trim().min(1, "Full name is required."),
+  name: z.string().trim().min(1, "Full name is required.").trim(),
   email: z.email("Invalid email address."),
 });
 
@@ -38,7 +38,7 @@ const ProfileForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Full Name */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="name">Full Name</label>
         <div className="relative">
           <User className="form-icon" />
@@ -57,7 +57,7 @@ const ProfileForm = () => {
       </fieldset>
 
       {/* Email Address */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="email">Email</label>
         <div className="relative">
           <Mail className="form-icon opacity-50" />

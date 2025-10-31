@@ -18,7 +18,7 @@ const ProfilePage = () => {
 
         <dl className="text-sm flex gap-2">
           <dt className="font-semibold">Member Since:</dt>
-          <dd>{convertDate(authUser!.createdAt.split("T")[0]) || "N/A"}</dd>
+          <dd>{convertDate(authUser!.createdAt)}</dd>
         </dl>
 
         <ProfileForm />

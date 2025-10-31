@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import type { User } from "../types/User";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { storeAPIErrors } from "../lib/storeAPIErrors";
 
 interface AuthStore {
   authUser: User | null;
@@ -51,16 +51,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
       set({ authUser: res.data.user });
     } catch (error: unknown) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
     }
@@ -77,16 +68,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ authUser: res.data.user });
       toast.success("Email successfully verified.");
     } catch (error) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
     }
@@ -99,16 +81,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
     } catch (error: unknown) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
     }
@@ -125,16 +98,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
       set({ authUser: res.data.user });
     } catch (error: unknown) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
     }
@@ -148,16 +112,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         email,
       });
     } catch (error: unknown) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
     }
@@ -171,16 +126,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         password,
       });
     } catch (error: unknown) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
     }
@@ -195,16 +141,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
       toast.success("Avatar successfully updated.");
     } catch (error: unknown) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isUpdatingAvatar: false });
     }
@@ -219,16 +156,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
       toast.success("Name successfully updated.");
     } catch (error: unknown) {
-      let message = "Something went wrong.";
-
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || error.message || message;
-      } else if (error instanceof Error) {
-        message = error.message || message;
-      }
-
-      toast.error(message);
-      throw error;
+      storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
     }

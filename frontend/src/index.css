@@ -23,7 +23,11 @@
   }
 
   form {
-    @apply max-w-xl space-y-5 w-full;
+    @apply max-w-xl flex flex-col items-center gap-5 w-full;
+  }
+
+  fieldset {
+    @apply flex flex-col gap-1 w-full;
   }
 
   input {
@@ -36,10 +40,6 @@
 }
 
 @layer components {
-  .fieldset {
-    @apply flex flex-col gap-1;
-  }
-
   .button-primary {
     @apply bg-primary text-secondary;
   }
@@ -62,5 +62,9 @@
 
   .button-icon-text {
     @apply inline-flex gap-2;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-neutral-200 rounded-full;
   }
 }

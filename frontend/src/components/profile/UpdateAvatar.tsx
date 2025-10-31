@@ -29,6 +29,7 @@ const UpdateAvatar = () => {
       };
     } catch (error) {
       console.error("Error updating name", error);
+      toast.error("Error uploading file.");
     }
   };
 

@@ -54,7 +54,7 @@ const ResetPasswordForm = ({
   return (
     <form className="text-left" onSubmit={handleSubmit(onSubmit)}>
       {/* Password */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="password">Password</label>
         <div className="relative">
           <Lock className="form-icon" />
@@ -86,7 +86,7 @@ const ResetPasswordForm = ({
       </fieldset>
 
       {/* Confirm Password */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="confirm-password">Confirm Password</label>
         <div className="relative">
           <Lock className="form-icon" />

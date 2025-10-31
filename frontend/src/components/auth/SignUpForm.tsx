@@ -9,7 +9,7 @@ import FormSubmitBtn from "./FormSubmitBtn";
 
 const signUpFormSchema = z.object({
   name: z.string().trim().min(1, "Full name is required."),
-  email: z.email("Invalid email address."),
+  email: z.email("Invalid email address.").trim().toLowerCase(),
   password: z.string().min(6, "Password must be at least six characters."),
 });
 
@@ -46,7 +46,7 @@ const SignUpForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Full Name */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="name">Full Name</label>
         <div className="relative">
           <User className="form-icon" />
@@ -65,7 +65,7 @@ const SignUpForm = () => {
       </fieldset>
 
       {/* Email Address */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="email">Email</label>
         <div className="relative">
           <Mail className="form-icon" />
@@ -84,7 +84,7 @@ const SignUpForm = () => {
       </fieldset>
 
       {/* Password */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="password">Password</label>
         <div className="relative">
           <Lock className="form-icon" />

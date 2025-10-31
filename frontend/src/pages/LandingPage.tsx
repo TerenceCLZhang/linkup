@@ -1,11 +1,12 @@
+import { Link } from "react-router-dom";
+
 const LandingPage = () => {
   return (
     <div className="text-center">
       <section className="max-w-2xl">
         <img src="hero.png" alt="" className="mx-auto w-100 -mt-25" />
 
-        <div className="space-y-10 ">
-          {" "}
+        <div className="flex flex-col gap-10 items-center">
           <div className="space-y-7">
             <h2 className="text-7xl">
               Link<span className="text-primary">Up</span>
@@ -20,12 +21,12 @@ const LandingPage = () => {
             you connect with friends, create group chats, and share media
             instantly.
           </p>
-          <div className="space-x-5">
+          <div className="flex gap-5">
             <button type="button">
-              <a href="/login">Log In</a>
+              <Link to="/login">Log In</Link>
             </button>
             <button type="button" className="button-primary">
-              <a href="/signup">Sign Up</a>
+              <Link to="/signup">Sign Up</Link>
             </button>
           </div>
         </div>

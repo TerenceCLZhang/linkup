@@ -3,7 +3,6 @@ import LandingPage from "./pages/LandingPage";
 import LogInPage from "./pages/auth/LogInPage";
 import SignUpPage from "./pages/auth/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
-import SettingsPage from "./pages/SettingsPage";
 import NavBar from "./components/NavBar";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
@@ -58,7 +57,7 @@ const App = () => {
     <div className="flex items-center flex-col w-full">
       <NavBar />
 
-      <main className="flex items-center justify-center flex-col min-h-screen">
+      <main className="flex items-center justify-center flex-col min-h-screen w-full">
         <Routes>
           {/* Public routes */}
           <Route
@@ -121,9 +120,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
-          {/* Routes available to all users */}
-          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
     </div>

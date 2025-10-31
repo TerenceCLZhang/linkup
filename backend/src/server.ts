@@ -35,7 +35,7 @@ app.use(morgan("tiny"));
 connectDB();
 
 app.use("/api/auth", authRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.listen(ENV.PORT, () => {
   console.log(`Server is listening on port ${ENV.PORT}`);

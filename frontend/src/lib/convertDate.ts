@@ -1,25 +1,26 @@
-const months = [
-  "Jan.",
-  "Feb.",
-  "Mar.",
-  "Apr.",
-  "May",
-  "Jun.",
-  "Jul.",
-  "Aug.",
-  "Sep.",
-  "Oct.",
-  "Nov.",
-  "Dec.",
-];
-
-// date must be in form YYYY-MM-DD
 export const convertDate = (date: string) => {
   const dateObj = new Date(date);
 
-  const day = dateObj.getDay();
-  const month = months[dateObj.getMonth()];
-  const year = dateObj.getFullYear();
+  return dateObj.toLocaleDateString("en-NZ", {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
 
-  return `${day} ${month} ${year}`;
+export const convertTimeAndDate = (date: string) => {
+  const dateObj = new Date(date);
+
+  return dateObj
+    .toLocaleDateString("en-NZ", {
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
+    .replace(",", "");
 };

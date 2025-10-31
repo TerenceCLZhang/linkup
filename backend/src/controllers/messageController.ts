@@ -6,9 +6,9 @@ import cloudinary from "../config/cloudinary.js";
 export const getUsersSidebar = async (req: Request, res: Response) => {
   try {
     const loggedInUserId = req.user?._id;
-    const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } });
+    const users = await User.find({ _id: { $ne: loggedInUserId } });
 
-    return res.json({ success: true, message: "Users found.", filteredUsers });
+    return res.json({ success: true, message: "Users found.", users });
   } catch (error) {
     console.error("Error with fetching users for sidebar", error);
     return res.status(500).json({ success: false, message: "Server error." });
@@ -16,10 +16,10 @@ export const getUsersSidebar = async (req: Request, res: Response) => {
 };
 
 export const getMessages = async (req: Request, res: Response) => {
-  const { otherUserId } = req.params;
+  const { id } = req.params;
 
   // Check if other user's ID is provided
-  if (!otherUserId) {
+  if (!id) {
     return res
       .status(400)
       .json({ success: false, message: "Other user's ID not provided." });
@@ -30,8 +30,8 @@ export const getMessages = async (req: Request, res: Response) => {
 
     const messages = await Message.find({
       $or: [
-        { senderId: loggedInUserId, receiverId: otherUserId },
-        { senderId: otherUserId, receiverId: loggedInUserId },
+        { senderId: loggedInUserId, receiverId: id },
+        { senderId: id, receiverId: loggedInUserId },
       ],
     });
 
@@ -43,11 +43,11 @@ export const getMessages = async (req: Request, res: Response) => {
 };
 
 export const sendMessage = async (req: Request, res: Response) => {
-  const { otherUserId } = req.params;
+  const { id } = req.params;
   const { text, image } = req.body;
 
   // Check if other user's ID is provided
-  if (!otherUserId) {
+  if (!id) {
     return res
       .status(400)
       .json({ success: false, message: "Other user's ID not provided." });
@@ -68,8 +68,8 @@ export const sendMessage = async (req: Request, res: Response) => {
 
     const newMessage = new Message({
       senderId: loggedInUserId,
-      receiverId: otherUserId,
-      text: text,
+      receiverId: id,
+      text: text || "",
       image: imageUrl,
     });
 

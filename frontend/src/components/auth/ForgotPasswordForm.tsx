@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 const forgotPasswordFormSchema = z.object({
-  email: z.email("Invalid email address."),
+  email: z.email("Invalid email address.").trim().toLowerCase(),
 });
 
 type forgotPasswordFormType = z.infer<typeof forgotPasswordFormSchema>;
@@ -41,7 +41,7 @@ const ForgotPasswordForm = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Email Address */}
-      <fieldset className="fieldset">
+      <fieldset>
         <div className="relative">
           <Mail className="form-icon" />
           <input

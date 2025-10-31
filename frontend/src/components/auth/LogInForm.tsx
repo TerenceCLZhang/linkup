@@ -8,7 +8,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import FormSubmitBtn from "./FormSubmitBtn";
 
 const logInFormSchema = z.object({
-  email: z.email("Invalid email address."),
+  email: z.email("Invalid email address.").trim().toLowerCase(),
   password: z.string().min(1, "Password required."),
 });
 
@@ -44,7 +44,7 @@ const LogInForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Email Address */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="email">Email</label>
         <div className="relative">
           <Mail className="form-icon" />
@@ -63,7 +63,7 @@ const LogInForm = () => {
       </fieldset>
 
       {/* Password */}
-      <fieldset className="fieldset">
+      <fieldset>
         <label htmlFor="password">Password</label>
         <div className="relative">
           <Lock className="form-icon" />
