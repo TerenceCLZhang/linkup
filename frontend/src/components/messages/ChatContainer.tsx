@@ -49,7 +49,7 @@ const ChatContainer = () => {
   return (
     <div className="flex-1 flex flex-col gap-5 p-5">
       <ChatHeader />
-      <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
+      <div className="flex-1 flex flex-col gap-3 overflow-y-auto no-scrollbar">
         {messages.map((message, i) => {
           return message.senderId === authUser?._id ? (
             <RightMessage key={i} message={message} user={authUser} />

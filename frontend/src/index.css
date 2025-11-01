@@ -40,6 +40,12 @@
   }
 }
 
+@layer utility {
+  .no-scrollbar {
+    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+  }
+}
+
 @layer components {
   .button-primary {
     @apply bg-primary text-secondary;
