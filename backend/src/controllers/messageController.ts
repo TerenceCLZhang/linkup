@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/User.js";
 import Message from "../models/Message.js";
 import cloudinary from "../config/cloudinary.js";
+import { getSocketId, io } from "../config/socket.js";
 
 export const getUsersSidebar = async (req: Request, res: Response) => {
   try {
@@ -43,11 +44,11 @@ export const getMessages = async (req: Request, res: Response) => {
 };
 
 export const sendMessage = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id: receiverId } = req.params;
   const { text, image } = req.body;
 
   // Check if other user's ID is provided
-  if (!id) {
+  if (!receiverId) {
     return res
       .status(400)
       .json({ success: false, message: "Other user's ID not provided." });
@@ -68,14 +69,18 @@ export const sendMessage = async (req: Request, res: Response) => {
 
     const newMessage = new Message({
       senderId: loggedInUserId,
-      receiverId: id,
+      receiverId,
       text: text || "",
       image: imageUrl,
     });
 
     await newMessage.save();
 
-    //TODO: REAL-TIME FUNCTIONALITY
+    // Real time messaging functionality
+    const receiverSocketId = getSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
     return res.json({ success: true, message: "Message created", newMessage });
   } catch (error) {

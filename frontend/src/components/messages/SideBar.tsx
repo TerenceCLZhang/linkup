@@ -2,12 +2,12 @@ import { Users } from "lucide-react";
 import { useChatStore } from "../../store/useChatStore";
 import { useEffect } from "react";
 import MessagesSideBarSkeleton from "../skeletons/MessagesSideBarSkeleton";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const SideBar = () => {
   const { contacts, getContacts, setSelectedUser, isUsersLoading } =
     useChatStore();
-
-  const onlineUsers = new Set<string>();
+  const { onlineUsers } = useAuthStore();
 
   useEffect(() => {
     getContacts();
@@ -39,6 +39,7 @@ const SideBar = () => {
                     <img
                       src={contact.avatar || "/default_avatar.svg"}
                       alt={`${contact.name}'s avatar`}
+                      className="w-full h-full object-cover"
                     />
                   </div>
 

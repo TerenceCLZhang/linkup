@@ -14,7 +14,7 @@ const ChatFormSchema = z.object({
 type ChatFormType = z.infer<typeof ChatFormSchema>;
 
 const ChatInput = () => {
-  const { register, handleSubmit, setValue } = useForm<ChatFormType>({
+  const { register, handleSubmit, setValue, reset } = useForm<ChatFormType>({
     resolver: zodResolver(ChatFormSchema),
     defaultValues: {
       text: "",
@@ -72,9 +72,9 @@ const ChatInput = () => {
     try {
       await sendMessage(text, image);
 
-      setValue("text", "");
-      setValue("image", "");
+      reset();
       setImagePreview("");
+      setInputNumLines(1);
     } catch (error) {
       console.error("Error sending message", error);
     }
@@ -133,11 +133,8 @@ const ChatInput = () => {
                 setInputNumLines((prev) => prev + 1);
               }
             }}
-            {...(register("text"),
-            {
+            {...register("text", {
               onChange: (e) => {
-                register("text").onChange(e);
-
                 const val = e.target.value;
                 setValue("text", val);
                 setInputNumLines(

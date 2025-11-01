@@ -8,8 +8,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import cors from "cors";
 import { rateLimit } from "express-rate-limit";
 import bodyParser from "body-parser";
-
-const app = express();
+import { app, server } from "./config/socket.js";
 
 app.use(
   cors({
@@ -37,6 +36,6 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-app.listen(ENV.PORT, () => {
+server.listen(ENV.PORT, () => {
   console.log(`Server is listening on port ${ENV.PORT}`);
 });

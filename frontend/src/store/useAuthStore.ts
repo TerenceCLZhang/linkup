@@ -3,12 +3,15 @@ import { axiosInstance } from "../lib/axios";
 import type { User } from "../types/User";
 import toast from "react-hot-toast";
 import { storeAPIErrors } from "../lib/storeAPIErrors";
+import { io, Socket } from "socket.io-client";
 
 interface AuthStore {
   authUser: User | null;
   isLoading: boolean;
   isCheckingAuth: boolean;
   isUpdatingAvatar: boolean;
+  socket: Socket | null;
+  onlineUsers: Set<string>;
   checkAuth: () => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   verifyEmail: (code: string) => Promise<void>;
@@ -18,18 +21,25 @@ interface AuthStore {
   resetPassword: (password: string, token: string) => Promise<void>;
   updateAvatar: (avatar: string) => Promise<void>;
   updateName: (name: string) => Promise<void>;
+  connectSocket: () => void;
+  disconnectSocket: () => void;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set, get) => ({
   authUser: null,
   isLoading: false,
   error: null,
   isCheckingAuth: true,
   isUpdatingAvatar: false,
+  onlineUsers: new Set<string>(),
+  socket: null,
 
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check-auth");
+
+      get().connectSocket();
+
       set({ authUser: res.data.user });
     } catch (error) {
       console.error("Error checking auth", error);
@@ -66,6 +76,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
 
       set({ authUser: res.data.user });
+
+      get().connectSocket();
+
       toast.success("Email successfully verified.");
     } catch (error) {
       storeAPIErrors(error);
@@ -79,6 +92,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
     try {
       await axiosInstance.post("/auth/logout");
+
+      get().disconnectSocket();
+
       set({ authUser: null });
     } catch (error: unknown) {
       storeAPIErrors(error);
@@ -97,6 +113,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       });
 
       set({ authUser: res.data.user });
+
+      get().connectSocket();
     } catch (error: unknown) {
       storeAPIErrors(error);
     } finally {
@@ -159,6 +177,30 @@ export const useAuthStore = create<AuthStore>((set) => ({
       storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  connectSocket: () => {
+    const authUser = get().authUser;
+    if (!authUser || get().socket?.connected) return;
+
+    const socket = io(import.meta.env.VITE_BASE_BACKEND_URL, {
+      withCredentials: true,
+      query: {
+        userId: authUser._id,
+      },
+    });
+
+    set({ socket });
+
+    socket.on("getOnlineUsers", (userIds: string[]) => {
+      set({ onlineUsers: new Set(userIds) });
+    });
+  },
+
+  disconnectSocket: () => {
+    if (get().socket?.connected) {
+      get().socket?.disconnect();
     }
   },
 }));
