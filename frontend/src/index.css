@@ -41,8 +41,17 @@
 }
 
 @layer utility {
-  .no-scrollbar {
-    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+  /* Webkit (Chrome, Safari Edge) */
+  .scrollbar::-webkit-scrollbar {
+    @apply w-3;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-accent rounded-full;
   }
 }
 
