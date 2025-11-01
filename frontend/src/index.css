@@ -43,7 +43,7 @@
 @layer utility {
   /* Webkit (Chrome, Safari Edge) */
   .scrollbar::-webkit-scrollbar {
-    @apply w-3;
+    @apply w-2;
   }
 
   .scrollbar::-webkit-scrollbar-track {
@@ -51,7 +51,7 @@
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-accent rounded-full;
+    @apply bg-neutral-300 rounded-full;
   }
 }
 
