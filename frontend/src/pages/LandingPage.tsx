@@ -4,7 +4,7 @@ const LandingPage = () => {
   return (
     <div className="text-center">
       <section className="max-w-2xl">
-        <img src="hero.png" alt="" className="mx-auto w-100 -mt-25" />
+        <img src="images/hero.png" alt="" className="mx-auto w-100 -mt-25" />
 
         <div className="flex flex-col gap-10 items-center">
           <div className="space-y-7">

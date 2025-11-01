@@ -20,7 +20,7 @@ const SignUpPage = () => {
         </p>
       </div>
       <div className="flex-1">
-        <img src="auth.jpg" alt="" />
+        <img src="images/signup.png" alt="" />
       </div>
     </div>
   );
