@@ -18,7 +18,7 @@ const ProfileForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<profileFormType>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -75,7 +75,11 @@ const ProfileForm = () => {
         {errors.email && <p className="input-error">{errors.email.message}</p>}
       </fieldset>
 
-      <FormSubmitBtn loadingText="Updating" notLoadingText="Update" />
+      <FormSubmitBtn
+        loadingText="Updating"
+        notLoadingText="Update"
+        disabled={!isDirty || isLoading}
+      />
     </form>
   );
 };
