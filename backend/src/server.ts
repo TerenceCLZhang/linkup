@@ -9,6 +9,7 @@ import cors from "cors";
 import { rateLimit } from "express-rate-limit";
 import bodyParser from "body-parser";
 import { app, server } from "./config/socket.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 app.use(
   cors({
@@ -34,6 +35,7 @@ app.use(morgan("tiny"));
 connectDB();
 
 app.use("/api/auth", authRoutes);
+app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 
 server.listen(ENV.PORT, () => {

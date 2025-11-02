@@ -5,6 +5,7 @@ import z from "zod";
 import { useChatStore } from "../../store/useChatStore";
 import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const ChatFormSchema = z.object({
   text: z.string().max(800).trim(),
@@ -24,7 +25,9 @@ const ChatInput = () => {
 
   const [inputNumLines, setInputNumLines] = useState(1);
   const [imagePreview, setImagePreview] = useState("");
-  const { selectedUser, sendMessage } = useChatStore();
+
+  const { authUser } = useAuthStore();
+  const { selectedChat, sendMessage } = useChatStore();
 
   const INPUT_MAX_LINES = 3;
 
@@ -111,7 +114,11 @@ const ChatInput = () => {
           </label>
           <textarea
             id="text"
-            placeholder={`Send a message to ${selectedUser?.name}`}
+            placeholder={`Send a message to ${
+              selectedChat?.isGroupChat
+                ? selectedChat.chatName
+                : selectedChat?.users.find((u) => u._id !== authUser?._id)?.name
+            }`}
             className="border-neutral-200 resize-none"
             rows={inputNumLines}
             data-gramm="false"

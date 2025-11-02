@@ -1,20 +1,21 @@
 import { create } from "zustand";
-import type { User } from "../types/User";
 import { axiosInstance } from "../lib/axios";
 import { storeAPIErrors } from "../lib/storeAPIErrors";
 import type { Message } from "../types/Message";
 import { useAuthStore } from "./useAuthStore";
+import type { Chat } from "../types/Chat";
 
 interface ChatStore {
-  contacts: User[];
+  chats: Chat[];
   messages: Message[];
-  selectedUser: User | null;
-  isUsersLoading: boolean;
+  selectedChat: Chat | null;
+  isChatsLoading: boolean;
   isMessagesLoading: boolean;
   isSoundEnabled: boolean;
+
   toggleSound: () => void;
-  setSelectedUser: (selectedUser: User) => void;
-  getContacts: () => Promise<void>;
+  setSelectedChat: (chat: Chat) => void;
+  getChats: () => Promise<void>;
   getMessages: (otherUserId: string) => Promise<void>;
   sendMessage: (text?: string, image?: string) => Promise<void>;
   listenToMessages: () => void;
@@ -22,10 +23,10 @@ interface ChatStore {
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
-  contacts: [],
+  chats: [],
   messages: [],
-  selectedUser: null,
-  isUsersLoading: false,
+  selectedChat: null,
+  isChatsLoading: false,
   isMessagesLoading: false,
   isSoundEnabled: Boolean(localStorage.getItem("isSoundEnabled")),
 
@@ -34,20 +35,20 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set({ isSoundEnabled: !get().isSoundEnabled });
   },
 
-  setSelectedUser: (selectedUser: User) => {
-    set({ selectedUser });
+  setSelectedChat: (selectedChat: Chat) => {
+    set({ selectedChat });
   },
 
-  getContacts: async () => {
-    set({ isUsersLoading: true });
+  getChats: async () => {
+    set({ isChatsLoading: true });
 
     try {
-      const res = await axiosInstance.get("/messages/users");
-      set({ contacts: res.data.users });
+      const res = await axiosInstance.get("/chats");
+      set({ chats: res.data.chats });
     } catch (error) {
       storeAPIErrors(error);
     } finally {
-      set({ isUsersLoading: false });
+      set({ isChatsLoading: false });
     }
   },
 
@@ -67,7 +68,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   sendMessage: async (text?: string, image?: string) => {
     try {
       const res = await axiosInstance.post(
-        `/messages/send/${get().selectedUser?._id}`,
+        `/messages/send/${get().selectedChat?._id}`,
         {
           text,
           image,
@@ -80,12 +81,15 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   listenToMessages: () => {
-    const selectedUser = get().selectedUser;
-    if (!selectedUser) return;
+    const selectedChat = get().selectedChat;
+    if (!selectedChat) return;
 
     const socket = useAuthStore.getState().socket;
-    socket?.on("newMessage", (newMessage) => {
-      if (newMessage.senderId !== selectedUser._id) return; // Only show message on the selected user chat
+    if (!socket) return;
+
+    socket.on("newMessage", (newMessage) => {
+      // Only add messages that belong to the current chat
+      if (newMessage.chat.toString() !== selectedChat._id.toString()) return;
 
       set({ messages: [...get().messages, newMessage] });
     });
