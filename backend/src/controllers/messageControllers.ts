@@ -75,7 +75,6 @@ export const sendMessage = async (req: Request, res: Response) => {
     chat.users.forEach((user) => {
       const id = user._id;
       if (id.toString() !== userId?.toString()) {
-        console.log(id, userId);
         const receiverSocketId = getSocketId(id.toString());
         if (receiverSocketId) {
           io.to(receiverSocketId).emit("newMessage", newMessage);
@@ -83,7 +82,9 @@ export const sendMessage = async (req: Request, res: Response) => {
       }
     });
 
-    return res.json({ success: true, message: "Message created", newMessage });
+    return res
+      .status(201)
+      .json({ success: true, message: "Message created", newMessage });
   } catch (error) {
     console.error("Error with sending messages", error);
     return res.status(500).json({ success: false, message: "Server error." });

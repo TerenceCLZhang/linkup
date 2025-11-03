@@ -18,8 +18,11 @@ interface ChatStore {
   getChats: () => Promise<void>;
   getMessages: (otherUserId: string) => Promise<void>;
   sendMessage: (text?: string, image?: string) => Promise<void>;
+  addContact: (email: string) => Promise<void>;
   listenToMessages: () => void;
   unListenToMessages: () => void;
+  listenToNewChats: () => void;
+  unListenToNewChats: () => void;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -80,6 +83,20 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }
   },
 
+  addContact: async (email: string) => {
+    try {
+      const res = await axiosInstance.post(`/chats/create`, {
+        email,
+      });
+      set({
+        chats: [res.data.chat, ...get().chats],
+        selectedChat: res.data.chat,
+      });
+    } catch (error) {
+      storeAPIErrors(error);
+    }
+  },
+
   listenToMessages: () => {
     const selectedChat = get().selectedChat;
     if (!selectedChat) return;
@@ -87,16 +104,43 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
-    socket.on("newMessage", (newMessage) => {
-      // Only add messages that belong to the current chat
-      if (newMessage.chat.toString() !== selectedChat._id.toString()) return;
+    socket.off("newMessage"); // Remove previous listener
 
-      set({ messages: [...get().messages, newMessage] });
+    // New message listener
+    socket.on("newMessage", (newMessage) => {
+      const { selectedChat, messages } = get();
+      if (
+        !selectedChat ||
+        newMessage.chat.toString() !== selectedChat._id.toString()
+      )
+        return;
+      set({ messages: [...messages, newMessage] });
     });
   },
 
   unListenToMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket?.off("newMessages");
+  },
+
+  listenToNewChats: () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+
+    socket.off("newChat"); // Remove previous listener
+
+    // Create chat listener
+    socket.on("newChat", (chat) => {
+      const { chats } = get();
+
+      if (chats.find((c) => c._id === chat._id)) return; // Avoid duplicates
+
+      set({ chats: [chat, ...chats] });
+    });
+  },
+
+  unListenToNewChats: () => {
+    const socket = useAuthStore.getState().socket;
+    socket?.off("newChat");
   },
 }));
