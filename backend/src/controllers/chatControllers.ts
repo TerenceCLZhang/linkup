@@ -120,6 +120,7 @@ export const createGroupChat = async (req: Request, res: Response) => {
     });
   }
 
+  // Check if emails is valid
   if (!emails || !Array.isArray(emails) || emails.length === 0) {
     return res.status(400).json({
       success: false,
@@ -127,6 +128,7 @@ export const createGroupChat = async (req: Request, res: Response) => {
     });
   }
 
+  // Check if the emails array contains 5 or less users
   if (emails.length >= 5) {
     return res.status(400).json({
       success: false,

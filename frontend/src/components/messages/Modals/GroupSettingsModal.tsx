@@ -1,23 +1,25 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
-import { X } from "lucide-react";
 import Modal from "../../ui/Modal";
 import { useChatStore } from "../../../store/useChatStore";
+import toast from "react-hot-toast";
+import { X } from "lucide-react";
 
-const GroupModal = ({
-  setShowGroupModal,
+const GroupSettingsModal = ({
+  setShowGroupSettingsModal,
 }: {
-  setShowGroupModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowGroupSettingsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [name, setName] = useState("");
+  const { selectedChat } = useChatStore();
+
+  // TODO: Implemnt Change Group Image
+
+  const [name, setName] = useState(selectedChat!.chatName || "");
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState<string[]>([]);
 
-  const { createGroupChat } = useChatStore();
-
   const addEmail = () => {
-    if (emails.length >= 5) {
-      toast.error("Cannot add more than 5 users to a group chat.");
+    if (emails.length + selectedChat!.users.length >= 6) {
+      toast.error("A group chat cannot contain more than 5 members.");
       return;
     }
 
@@ -32,23 +34,11 @@ const GroupModal = ({
     setEmails(emails.filter((e) => e !== email));
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name) return toast.error("Group name required.");
-    if (emails.length === 0) return toast.error("Add at least one user.");
-
-    try {
-      await createGroupChat(name, emails);
-      setShowGroupModal(false);
-    } catch (error) {
-      console.error("Error creating group chat", error);
-    }
-  };
-
   return (
-    <Modal onClose={() => setShowGroupModal(false)}>
-      <h2 className="text-3xl mb-5">Create New Group Chat</h2>
-      <form className="space-y-3" onSubmit={onSubmit}>
+    <Modal onClose={() => setShowGroupSettingsModal(false)}>
+      <h2 className="text-3xl mb-5">Edit Group Chat</h2>
+
+      <form>
         <fieldset>
           <label htmlFor="name">Group Name</label>
           <input
@@ -60,7 +50,7 @@ const GroupModal = ({
         </fieldset>
 
         <fieldset>
-          <label htmlFor="emails">Add Emails</label>
+          <label htmlFor="email">Add New Emails</label>
           <div className="flex gap-2">
             <input
               id="emails"
@@ -74,13 +64,13 @@ const GroupModal = ({
                   addEmail();
                 }
               }}
-              disabled={emails.length >= 5}
+              disabled={emails.length + selectedChat!.users.length >= 5}
             />
             <button
               type="button"
               onClick={addEmail}
               className="button-primary"
-              disabled={emails.length >= 5}
+              disabled={emails.length + selectedChat!.users.length >= 5}
             >
               Add
             </button>
@@ -105,11 +95,11 @@ const GroupModal = ({
         </fieldset>
 
         <button type="submit" className="button-primary w-full">
-          Create Group
+          Update Group
         </button>
       </form>
     </Modal>
   );
 };
 
-export default GroupModal;
+export default GroupSettingsModal;

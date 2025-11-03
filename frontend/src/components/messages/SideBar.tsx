@@ -1,9 +1,9 @@
 import { useChatStore } from "../../store/useChatStore";
 import { useEffect } from "react";
 import MessagesSideBarSkeleton from "../skeletons/MessagesSideBarSkeleton";
-import OneOnOneChat from "./OneOnOneChat";
+import OneOnOneChat from "./Chats/OneOnOneChat";
 import SideBarHeader from "./SideBarHeader";
-import GroupChat from "./GroupChat";
+import GroupChat from "./Chats/GroupChat";
 
 const SideBar = () => {
   const {

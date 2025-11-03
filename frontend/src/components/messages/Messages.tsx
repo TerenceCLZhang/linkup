@@ -21,7 +21,7 @@ export const LeftMessage = ({
 
       <div className="bg-neutral-50 w-fit p-3 rounded-xl max-w-[50%]">
         <div className="flex gap-2 items-center">
-          <span className="font-bold">{user.name}</span>
+          <span className="font-bold truncate flex-1">{user.name}</span>
           <span className="text-xs">
             {convertTimeAndDate(message.createdAt)}
           </span>
@@ -56,7 +56,7 @@ export const RightMessage = ({
     <div className="flex items-center gap-3 justify-end">
       <div className="bg-neutral-50 w-fit p-3 rounded-xl space-y-1 max-w-[50%]">
         <div className="flex gap-2 items-center justify-self-end">
-          <span className="font-bold">{user.name}</span>
+          <span className="font-bold truncate flex-1">{user.name}</span>
           <span className="text-xs">
             {convertTimeAndDate(message.createdAt)}
           </span>

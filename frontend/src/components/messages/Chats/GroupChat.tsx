@@ -1,5 +1,5 @@
-import { useChatStore } from "../../store/useChatStore";
-import type { Chat } from "../../types/Chat";
+import { useChatStore } from "../../../store/useChatStore";
+import type { Chat } from "../../../types/Chat";
 
 const GroupChat = ({ chat }: { chat: Chat }) => {
   const { setSelectedChat } = useChatStore();
@@ -10,7 +10,7 @@ const GroupChat = ({ chat }: { chat: Chat }) => {
       onClick={() => setSelectedChat(chat)}
       className="flex items-center gap-2 bg-transparent w-full justify-start hover:bg-secondary p-1"
     >
-      <div className="w-15 h-15 shrink-0 relative">
+      <div className="size-15 shrink-0 relative">
         <div className="overflow-hidden rounded-full bg-neutral-300">
           <img
             src={chat.image || "/default_group.svg"}

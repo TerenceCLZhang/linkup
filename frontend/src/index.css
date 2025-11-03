@@ -32,7 +32,7 @@
 
   input,
   textarea {
-    @apply border rounded-lg p-2 w-full h-full disabled:opacity-50;
+    @apply border rounded-lg p-2 w-full h-full disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   button {
