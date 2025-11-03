@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import MessagesSideBarSkeleton from "../skeletons/MessagesSideBarSkeleton";
 import OneOnOneChat from "./OneOnOneChat";
 import SideBarHeader from "./SideBarHeader";
+import GroupChat from "./GroupChat";
 
 const SideBar = () => {
   const {
@@ -37,7 +38,7 @@ const SideBar = () => {
         ) : (
           <div className="h-full overflow-y-auto space-y-4 pr-2">
             {chats.map((chat, i) => {
-              if (chat.isGroupChat) return null; // TODO: add group chats
+              if (chat.isGroupChat) return <GroupChat key={i} chat={chat} />;
               return <OneOnOneChat key={i} chat={chat} />;
             })}
           </div>

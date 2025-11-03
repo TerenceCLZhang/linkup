@@ -5,6 +5,7 @@ import ChatInput from "./ChatInput";
 import { useAuthStore } from "../../store/useAuthStore";
 import { LeftMessage, RightMessage } from "./Messages";
 import type { User } from "../../types/User";
+import ChatHeader from "./ChatHeader";
 
 const ChatContainer = () => {
   const {
@@ -81,34 +82,6 @@ const NoChatSelectedContainer = () => {
         <h4 className="text-2xl">Welcome to LinkUp!</h4>
         <p>Select a chat from the sidebar to start connecting with others.</p>
       </div>
-    </div>
-  );
-};
-
-const ChatHeader = () => {
-  const { selectedChat } = useChatStore();
-  const { authUser, onlineUsers } = useAuthStore();
-
-  const otherUser = selectedChat!.users.find((u) => u._id !== authUser!._id);
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="rounded-full shrink-0 self-start w-10 h-10 relative">
-        <div className="overflow-hidden rounded-full ">
-          <img
-            src={otherUser!.avatar || "/default_avatar.svg"}
-            alt={`${otherUser!.name}'s avatar`}
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        <div
-          className={`absolute h-3 w-3 rounded-full right-0 bottom-0 border-2 border-neutral-50 ${
-            onlineUsers.has(otherUser!._id) ? "bg-green-500" : "bg-neutral-500"
-          }`}
-        />
-      </div>
-      <span className="font-semibold">{otherUser?.name}</span>
     </div>
   );
 };

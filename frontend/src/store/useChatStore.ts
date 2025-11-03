@@ -19,6 +19,7 @@ interface ChatStore {
   getMessages: (otherUserId: string) => Promise<void>;
   sendMessage: (text?: string, image?: string) => Promise<void>;
   addContact: (email: string) => Promise<void>;
+  createGroupChat: (name: string, emails: string[]) => Promise<void>;
   listenToMessages: () => void;
   unListenToMessages: () => void;
   listenToNewChats: () => void;
@@ -97,14 +98,27 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }
   },
 
+  createGroupChat: async (name: string, emails: string[]) => {
+    try {
+      const res = await axiosInstance.post(`/chats/group-chat/create`, {
+        name,
+        emails,
+      });
+      set({
+        chats: [res.data.chat, ...get().chats],
+        selectedChat: res.data.chat,
+      });
+    } catch (error) {
+      storeAPIErrors(error);
+    }
+  },
+
   listenToMessages: () => {
     const selectedChat = get().selectedChat;
     if (!selectedChat) return;
 
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
-
-    socket.off("newMessage"); // Remove previous listener
 
     // New message listener
     socket.on("newMessage", (newMessage) => {
@@ -126,8 +140,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   listenToNewChats: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
-
-    socket.off("newChat"); // Remove previous listener
 
     // Create chat listener
     socket.on("newChat", (chat) => {

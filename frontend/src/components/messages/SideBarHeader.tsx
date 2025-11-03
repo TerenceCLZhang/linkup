@@ -1,6 +1,7 @@
-import { Plus, Users, X } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useChatStore } from "../../store/useChatStore";
+import ContactModal from "./Modals/ContactModal";
+import GroupModal from "./Modals/GroupModal";
 
 const SideBarHeader = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -83,75 +84,8 @@ const SideBarHeader = () => {
       {showContactModal && (
         <ContactModal setShowContactModal={setShowContactModal} />
       )}
-    </div>
-  );
-};
 
-const ContactModal = ({
-  setShowContactModal,
-}: {
-  setShowContactModal: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  const modalRef = useRef<HTMLDivElement | null>(null);
-  const [email, setEmail] = useState("");
-  const { addContact } = useChatStore();
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setShowContactModal(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [setShowContactModal]);
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      await addContact(email);
-      setShowContactModal(false);
-    } catch (error) {
-      console.error("Error adding new contact", error);
-    }
-  };
-
-  return (
-    <div className="absolute top-0 left-0 h-screen w-screen z-20">
-      <div className="bg-black/50 w-full h-full" />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-1/2 z-30 bg-secondary p-5 w-150 rounded-lg shadow-lg flex flex-col items-center gap-3"
-        ref={modalRef}
-      >
-        <button
-          type="button"
-          onClick={() => setShowContactModal(false)}
-          className="self-end p-0"
-        >
-          <X />
-        </button>
-        <div className="space-y-5 w-full">
-          <h2 className="text-3xl">Add New Contact</h2>
-
-          <form className="spacec-y-3" onSubmit={onSubmit}>
-            <fieldset>
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="text"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </fieldset>
-
-            <button type="submit" className="button-primary w-full">
-              Add Contact
-            </button>
-          </form>
-        </div>
-      </div>
+      {showGroupModal && <GroupModal setShowGroupModal={setShowGroupModal} />}
     </div>
   );
 };
