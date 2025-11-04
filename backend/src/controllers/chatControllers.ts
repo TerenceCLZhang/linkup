@@ -129,7 +129,7 @@ export const createGroupChat = async (req: Request, res: Response) => {
   }
 
   // Check if the emails array contains 5 or less users
-  if (emails.length >= 5) {
+  if (emails.length > 6) {
     return res.status(400).json({
       success: false,
       message: "Group chat cannot have more than 6 people (including creator).",
@@ -146,20 +146,20 @@ export const createGroupChat = async (req: Request, res: Response) => {
 
   try {
     // Find all users by their emails
-    const users = await User.find({ email: { $in: emails } });
+    const foundUsers = await User.find({ email: { $in: emails } });
 
-    if (users.length !== emails.length) {
+    if (foundUsers.length !== emails.length) {
       return res.status(404).json({
         success: false,
         message: "One or more users not found.",
       });
     }
 
-    const otherUserIds = users.map((u) => u._id);
+    const otherUserIds = foundUsers.map((u) => u._id);
 
     // Create a new group chat
     const newChat = await Chat.create({
-      chatName: name,
+      chatName: name.trim(),
       isGroupChat: true,
       users: [userId, ...otherUserIds],
       groupAdmin: userId,
@@ -170,7 +170,7 @@ export const createGroupChat = async (req: Request, res: Response) => {
       .populate("users", "-password");
 
     // Emit socket event
-    users.forEach((user) => {
+    foundUsers.forEach((user) => {
       const id = user._id;
       if (id.toString() !== userId?.toString()) {
         const receiverSocketId = getSocketId(id.toString());
@@ -187,6 +187,207 @@ export const createGroupChat = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error creating group chat", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const updateGroupChat = async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const { name, emails } = req.body;
+  const userId = req.user?._id;
+
+  if (!name && (!emails || !Array.isArray(emails) || emails.length === 0)) {
+    return res.status(400).json({
+      success: false,
+      message: "No valid updates provided. Include a new name or user emails.",
+    });
+  }
+
+  try {
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Chat not found." });
+    }
+
+    if (!chat.isGroupChat) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Chat is not a group chat." });
+    }
+
+    if (chat.groupAdmin?.toString() !== userId?.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Only group admins can update the group chat.",
+      });
+    }
+
+    // Handle name change
+    if (name) {
+      const trimmedName = name.trim();
+      if (!trimmedName) {
+        return res.status(400).json({
+          success: false,
+          message: "Chat name cannot be empty or only spaces.",
+        });
+      }
+      chat.chatName = trimmedName;
+    }
+
+    // Handle add new users
+    if (emails) {
+      // Check how many users already in group chat
+      if (emails.length + chat.users.length > 6) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Group chat cannot have more than 6 people (including creator).",
+        });
+      }
+
+      // Check if user is trying to add their own email as a contact.
+      if (emails.includes(req.user?.email)) {
+        return res.status(400).json({
+          success: false,
+          message: "You can’t add yourself into the group chat.",
+        });
+      }
+
+      // Find all users by their emails
+      const foundUsers = await User.find({ email: { $in: emails } });
+
+      if (foundUsers.length !== emails.length) {
+        return res.status(404).json({
+          success: false,
+          message: "One or more users not found.",
+        });
+      }
+
+      const newUserIds = foundUsers.map((u) => u._id);
+
+      // Check for duplicate IDs
+      const existingUserIds = chat.users.map((u) => u.toString());
+      const duplicates = newUserIds.filter((id) =>
+        existingUserIds.includes(id.toString())
+      );
+
+      if (duplicates.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "One or more users are already in the group chat.",
+        });
+      }
+
+      chat.users = [...chat.users, ...newUserIds];
+    }
+
+    await chat.save();
+
+    const updatedChat = await Chat.findById(chatId)
+      .populate("groupAdmin", "-password")
+      .populate("users", "-password");
+
+    // TODO: Implement web sockets
+
+    return res.json({
+      success: true,
+      message: "Group chat successfully updated",
+      chat: updatedChat,
+    });
+  } catch (error) {
+    console.error("Error updating group chat", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const removeGroupChatUser = async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const { email } = req.body;
+  const userId = req.user?._id;
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email not provided." });
+  }
+
+  try {
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Chat not found." });
+    }
+
+    if (!chat.isGroupChat) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Chat is not a group chat." });
+    }
+
+    // Check if user exists
+    const userToRemove = await User.findOne({ email });
+    if (!userToRemove) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Check if the user is in the chat
+    const isMember = chat.users.some(
+      (u) => u.toString() === userToRemove._id.toString()
+    );
+    if (!isMember) {
+      return res.status(400).json({
+        success: false,
+        message: "User is not a member of this group chat.",
+      });
+    }
+
+    // --- Permission logic ---
+    const isAdmin = chat.groupAdmin?.equals(userId);
+    const isSelf = userToRemove._id.equals(userId);
+
+    // Only admin can remove others; non-admin can only remove themselves
+    if (!isAdmin && !isSelf) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Only the group admin can remove other users. You can only leave the group yourself.",
+      });
+    }
+
+    // Prevent admin from removing themselves
+    if (isAdmin && isSelf) {
+      return res.status(400).json({
+        success: false,
+        message: "Group admin cannot remove themselves.",
+      });
+    }
+
+    // Remove the user from the group
+    chat.users = chat.users.filter(
+      (u) => u.toString() !== userToRemove._id.toString()
+    );
+
+    await chat.save();
+
+    const updatedChat = await Chat.findById(chatId)
+      .populate("groupAdmin", "-password")
+      .populate("users", "-password");
+
+    // TODO: Implement web scokets
+
+    return res.json({
+      success: true,
+      message: `${userToRemove.email} was removed from group chat.`,
+      chat: updatedChat,
+    });
+  } catch (error) {
+    console.error("Error updating group chat", error);
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };

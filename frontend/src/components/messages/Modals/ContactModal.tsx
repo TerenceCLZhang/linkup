@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useChatStore } from "../../../store/useChatStore";
 import Modal from "../../ui/Modal";
+import FormSubmitBtn from "../../ui/FormSubmitBtn";
 
 const ContactModal = ({
   setShowContactModal,
@@ -8,12 +9,12 @@ const ContactModal = ({
   setShowContactModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [email, setEmail] = useState("");
-  const { addContact } = useChatStore();
+  const { addContact, isLoading } = useChatStore();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addContact(email);
+      await addContact(email.trim());
       setShowContactModal(false);
     } catch (error) {
       console.error("Error adding new contact", error);
@@ -31,11 +32,17 @@ const ContactModal = ({
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+            aria-disabled={isLoading}
           />
         </fieldset>
-        <button type="submit" className="button-primary w-full">
-          Add Contact
-        </button>
+        <FormSubmitBtn
+          loadingText="Creating Contact"
+          notLoadingText="Create Contact"
+          disabled={
+            !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+          }
+        />
       </form>
     </Modal>
   );

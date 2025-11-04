@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
-import FormSubmitBtn from "./FormSubmitBtn";
+import FormSubmitBtn from "../ui/FormSubmitBtn";
 
 const resetPasswordFormSchema = z
   .object({

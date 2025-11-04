@@ -29,7 +29,8 @@ const UserModal = ({
               {selectedChat.groupAdmin?._id === user._id ? (
                 <span className="font-bold">Group Owner</span>
               ) : (
-                selectedChat.groupAdmin?._id === authUser?._id && (
+                selectedChat.groupAdmin?._id === authUser?._id ||
+                (authUser?._id === user._id && (
                   <button
                     type="button"
                     className="text-red-500 p-1"
@@ -38,7 +39,7 @@ const UserModal = ({
                   >
                     <X />
                   </button>
-                )
+                ))
               )}
             </div>
           ))}
@@ -46,7 +47,11 @@ const UserModal = ({
       ) : (
         <div className="flex gap-5 items-center">
           <UserAvatar user={toRemoveUser} size="md" includeStatus={false} />
-          <span>Are you sure you want to remove this user?</span>
+          <span>
+            {selectedChat?.groupAdmin?._id === authUser?._id
+              ? "Are you sure you want to remove this user?"
+              : "Are you sure you want to leave this group chat?"}
+          </span>
           <div className="flex gap-5">
             <button
               type="button"

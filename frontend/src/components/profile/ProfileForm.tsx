@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Mail, User } from "lucide-react";
-import FormSubmitBtn from "../auth/FormSubmitBtn";
+import FormSubmitBtn from "../ui/FormSubmitBtn";
 
 const profileFormSchema = z.object({
   name: z.string().trim().min(1, "Full name is required.").trim(),

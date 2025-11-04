@@ -12,6 +12,7 @@ interface ChatStore {
   isChatsLoading: boolean;
   isMessagesLoading: boolean;
   isSoundEnabled: boolean;
+  isLoading: boolean;
 
   toggleSound: () => void;
   setSelectedChat: (chat: Chat) => void;
@@ -33,6 +34,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   isChatsLoading: false,
   isMessagesLoading: false,
   isSoundEnabled: Boolean(localStorage.getItem("isSoundEnabled")),
+  isLoading: false,
 
   toggleSound: () => {
     localStorage.setItem("isSoundEnabled", (!get().isSoundEnabled).toString());
@@ -85,6 +87,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   addContact: async (email: string) => {
+    set({ isLoading: true });
+
     try {
       const res = await axiosInstance.post(`/chats/create`, {
         email,
@@ -95,10 +99,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       });
     } catch (error) {
       storeAPIErrors(error);
+    } finally {
+      set({ isLoading: false });
     }
   },
 
   createGroupChat: async (name: string, emails: string[]) => {
+    set({ isLoading: true });
+
     try {
       const res = await axiosInstance.post(`/chats/group-chat/create`, {
         name,
@@ -110,6 +118,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       });
     } catch (error) {
       storeAPIErrors(error);
+    } finally {
+      set({ isLoading: false });
     }
   },
 

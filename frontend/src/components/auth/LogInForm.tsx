@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
-import FormSubmitBtn from "./FormSubmitBtn";
+import FormSubmitBtn from "../ui/FormSubmitBtn";
 
 const logInFormSchema = z.object({
   email: z.email("Invalid email address.").trim().toLowerCase(),

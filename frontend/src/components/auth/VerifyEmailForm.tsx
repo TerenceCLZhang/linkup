@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import FormSubmitBtn from "./FormSubmitBtn";
+import FormSubmitBtn from "../ui/FormSubmitBtn";
 
 const verifyEmailFormSchema = z.object({
   code: z.array(z.string()).length(6),

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import Modal from "../../ui/Modal";
 import { useChatStore } from "../../../store/useChatStore";
+import FormSubmitBtn from "../../ui/FormSubmitBtn";
 
 const GroupModal = ({
   setShowGroupModal,
@@ -13,7 +14,7 @@ const GroupModal = ({
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState<string[]>([]);
 
-  const { createGroupChat } = useChatStore();
+  const { createGroupChat, isLoading } = useChatStore();
 
   const addEmail = () => {
     if (emails.length >= 5) {
@@ -34,7 +35,7 @@ const GroupModal = ({
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name) return toast.error("Group name required.");
+    if (!name.trim()) return toast.error("Group name required.");
     if (emails.length === 0) return toast.error("Add at least one user.");
 
     try {
@@ -56,6 +57,8 @@ const GroupModal = ({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={isLoading}
+            aria-disabled={isLoading}
           />
         </fieldset>
 
@@ -74,13 +77,14 @@ const GroupModal = ({
                   addEmail();
                 }
               }}
-              disabled={emails.length >= 5}
+              disabled={emails.length >= 5 || isLoading}
+              aria-disabled={isLoading}
             />
             <button
               type="button"
               onClick={addEmail}
               className="button-primary"
-              disabled={emails.length >= 5}
+              disabled={emails.length >= 5 || isLoading}
             >
               Add
             </button>
@@ -104,9 +108,11 @@ const GroupModal = ({
           </div>
         </fieldset>
 
-        <button type="submit" className="button-primary w-full">
-          Create Group
-        </button>
+        <FormSubmitBtn
+          loadingText="Creating Group Chat"
+          notLoadingText="Create Group Chat"
+          disabled={name === "" || emails.length === 0}
+        />
       </form>
     </Modal>
   );
