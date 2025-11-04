@@ -53,16 +53,19 @@ const ChatContainer = () => {
       <ChatHeader />
       <div className="flex-1 flex flex-col gap-3 overflow-y-auto px-5 scrollbar">
         {messages.map((message, i) => {
+          // Determine the sender user
+          const sender =
+            message.senderId === authUser?._id
+              ? authUser
+              : selectedChat?.users.find((u) => u._id === message.senderId);
+
+          // If no sender is found yet, skip rendering this message
+          if (!sender) return null;
+
           return message.senderId === authUser?._id ? (
-            <RightMessage key={i} message={message} user={authUser} />
+            <RightMessage key={i} message={message} user={sender} />
           ) : (
-            <LeftMessage
-              key={i}
-              message={message}
-              user={
-                selectedChat?.users.find((u) => u._id !== authUser?._id) as User
-              }
-            />
+            <LeftMessage key={i} message={message} user={sender} />
           );
         })}
         <div ref={bottomRef} />
