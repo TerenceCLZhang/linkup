@@ -2,7 +2,7 @@ import { Settings, Users } from "lucide-react";
 import { useChatStore } from "../../../store/useChatStore";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { useState } from "react";
-import UserModal from "../Modals/UserModal";
+import GroupMembersModal from "../Modals/GroupMembersModal";
 import GroupSettingsModal from "../Modals/GroupSettingsModal";
 
 const GroupChatHeaderBtns = () => {
@@ -31,7 +31,9 @@ const GroupChatHeaderBtns = () => {
         </button>
       )}
 
-      {showUserModal && <UserModal setShowUserModal={setShowUserModal} />}
+      {showUserModal && (
+        <GroupMembersModal setShowUserModal={setShowUserModal} />
+      )}
       {showGroupSettingsModal && (
         <GroupSettingsModal
           setShowGroupSettingsModal={setShowGroupSettingsModal}

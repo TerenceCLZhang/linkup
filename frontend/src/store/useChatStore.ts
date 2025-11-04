@@ -21,6 +21,9 @@ interface ChatStore {
   sendMessage: (text?: string, image?: string) => Promise<void>;
   addContact: (email: string) => Promise<void>;
   createGroupChat: (name: string, emails: string[]) => Promise<void>;
+  updateGroupChat: (name: string, emails: string[]) => Promise<void>;
+  removeGroupChatUser: (email: string) => Promise<void>;
+
   listenToMessages: () => void;
   unListenToMessages: () => void;
   listenToNewChats: () => void;
@@ -87,11 +90,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   addContact: async (email: string) => {
+    const formattedEmail = email.trim().toLowerCase();
     set({ isLoading: true });
 
     try {
       const res = await axiosInstance.post(`/chats/create`, {
-        email,
+        email: formattedEmail,
       });
       set({
         chats: [res.data.chat, ...get().chats],
@@ -108,7 +112,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const res = await axiosInstance.post(`/chats/group-chat/create`, {
+      const res = await axiosInstance.post("/chats/group-chat/create", {
         name,
         emails,
       });
@@ -116,6 +120,93 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         chats: [res.data.chat, ...get().chats],
         selectedChat: res.data.chat,
       });
+    } catch (error) {
+      storeAPIErrors(error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updateGroupChat: async (name: string, emails: string[]) => {
+    set({ isLoading: true });
+
+    try {
+      const selectedChat = get().selectedChat;
+      if (!selectedChat?._id) return;
+
+      const res = await axiosInstance.patch(
+        `/chats/group-chat/update/${selectedChat._id}`,
+        {
+          name,
+          emails,
+        }
+      );
+
+      const updatedChat = res.data.chat;
+
+      // Update chat list and selected chat
+      set({
+        chats: get().chats.map((chat) =>
+          chat._id === updatedChat._id
+            ? {
+                ...chat,
+                chatName: updatedChat.chatName,
+                users: updatedChat.users,
+              }
+            : chat
+        ),
+        selectedChat:
+          selectedChat._id === updatedChat._id
+            ? ({
+                ...selectedChat,
+                chatName: updatedChat.chatName,
+                users: updatedChat.users,
+              } as Chat)
+            : selectedChat,
+      });
+    } catch (error) {
+      storeAPIErrors(error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  removeGroupChatUser: async (email: string) => {
+    const formattedEmail = email.trim().toLowerCase();
+    set({ isLoading: true });
+
+    try {
+      const selectedChat = get().selectedChat;
+      if (!selectedChat?._id) return;
+
+      const res = await axiosInstance.patch(
+        `/chats/group-chat/remove/${selectedChat._id}`,
+        { email: formattedEmail }
+      );
+
+      const updatedChat = res.data.chat;
+      const authUser = useAuthStore.getState().authUser;
+
+      // Update chat list and selected chat
+      set({
+        chats: get().chats.map((chat) =>
+          chat._id === updatedChat._id
+            ? { ...chat, users: updatedChat.users }
+            : chat
+        ),
+        selectedChat:
+          selectedChat._id === updatedChat._id
+            ? ({ ...selectedChat, users: updatedChat.users } as Chat)
+            : selectedChat,
+      });
+
+      // If user removed themselves, update state accordingly
+      if (formattedEmail === authUser?.email) {
+        set({
+          chats: get().chats.filter((chat) => chat._id !== selectedChat._id),
+          selectedChat: null,
+        });
+      }
     } catch (error) {
       storeAPIErrors(error);
     } finally {

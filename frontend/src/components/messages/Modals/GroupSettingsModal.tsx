@@ -9,7 +9,7 @@ const GroupSettingsModal = ({
 }: {
   setShowGroupSettingsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { selectedChat } = useChatStore();
+  const { selectedChat, updateGroupChat } = useChatStore();
 
   // TODO: Implemnt Change Group Image
 
@@ -34,11 +34,35 @@ const GroupSettingsModal = ({
     setEmails(emails.filter((e) => e !== email));
   };
 
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedChat) return;
+
+    const trimmedName = name.trim();
+
+    if (trimmedName.length === 0) {
+      toast.error("Name cannot be empty.");
+    }
+
+    if (selectedChat.users.length + emails.length > 6) {
+      toast.error("Cannot have more than 6 users in a group chat.");
+    }
+
+    try {
+      await updateGroupChat(name, emails);
+
+      setEmails([]);
+      toast.success("Group successfully updated.");
+    } catch (error) {
+      console.error("Error updating group chat", error);
+    }
+  };
+
   return (
     <Modal onClose={() => setShowGroupSettingsModal(false)}>
       <h2 className="text-3xl mb-5">Edit Group Chat</h2>
 
-      <form>
+      <form onSubmit={onSubmit}>
         <fieldset>
           <label htmlFor="name">Group Name</label>
           <input
@@ -94,7 +118,11 @@ const GroupSettingsModal = ({
           </div>
         </fieldset>
 
-        <button type="submit" className="button-primary w-full">
+        <button
+          type="submit"
+          className="button-primary w-full"
+          disabled={name === selectedChat?.chatName && emails.length === 0}
+        >
           Update Group
         </button>
       </form>
