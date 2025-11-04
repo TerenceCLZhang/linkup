@@ -172,7 +172,7 @@ export const createGroupChat = async (req: Request, res: Response) => {
     // Emit socket event
     foundUsers.forEach((user) => {
       const id = user._id;
-      if (id.toString() !== userId?.toString()) {
+      if (!id.equals(userId)) {
         const receiverSocketId = getSocketId(id.toString());
         if (receiverSocketId) {
           io.to(receiverSocketId).emit("newChat", chat);
@@ -217,7 +217,7 @@ export const updateGroupChat = async (req: Request, res: Response) => {
         .json({ success: false, message: "Chat is not a group chat." });
     }
 
-    if (chat.groupAdmin?.toString() !== userId?.toString()) {
+    if (!chat.groupAdmin?.equals(userId)) {
       return res.status(403).json({
         success: false,
         message: "Only group admins can update the group chat.",
@@ -268,10 +268,7 @@ export const updateGroupChat = async (req: Request, res: Response) => {
       const newUserIds = foundUsers.map((u) => u._id);
 
       // Check for duplicate IDs
-      const existingUserIds = chat.users.map((u) => u.toString());
-      const duplicates = newUserIds.filter((id) =>
-        existingUserIds.includes(id.toString())
-      );
+      const duplicates = newUserIds.filter((id) => chat.users.includes(id));
 
       if (duplicates.length > 0) {
         return res.status(400).json({
@@ -289,7 +286,15 @@ export const updateGroupChat = async (req: Request, res: Response) => {
       .populate("groupAdmin", "-password")
       .populate("users", "-password");
 
-    // TODO: Implement web sockets
+    // Send web socket event
+    chat.users.forEach((user) => {
+      if (!user.equals(userId)) {
+        const receiverSocketId = getSocketId(user.toString());
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("updatedChat", updatedChat);
+        }
+      }
+    });
 
     return res.json({
       success: true,
@@ -337,9 +342,7 @@ export const removeGroupChatUser = async (req: Request, res: Response) => {
     }
 
     // Check if the user is in the chat
-    const isMember = chat.users.some(
-      (u) => u.toString() === userToRemove._id.toString()
-    );
+    const isMember = chat.users.some((u) => u.equals(userToRemove._id));
     if (!isMember) {
       return res.status(400).json({
         success: false,
@@ -369,9 +372,7 @@ export const removeGroupChatUser = async (req: Request, res: Response) => {
     }
 
     // Remove the user from the group
-    chat.users = chat.users.filter(
-      (u) => u.toString() !== userToRemove._id.toString()
-    );
+    chat.users = chat.users.filter((u) => !u.equals(userToRemove._id));
 
     await chat.save();
 

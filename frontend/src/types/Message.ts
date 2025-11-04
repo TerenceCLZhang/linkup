@@ -1,6 +1,6 @@
 export interface Message {
   senderId: string;
-  receiverId: string;
+  chat: string;
   text: string;
   image: string;
   createdAt: string;

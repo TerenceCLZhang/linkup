@@ -4,6 +4,7 @@ import { storeAPIErrors } from "../lib/storeAPIErrors";
 import type { Message } from "../types/Message";
 import { useAuthStore } from "./useAuthStore";
 import type { Chat } from "../types/Chat";
+import { withSocket } from "../lib/withSocket";
 
 interface ChatStore {
   chats: Chat[];
@@ -28,6 +29,8 @@ interface ChatStore {
   unListenToMessages: () => void;
   listenToNewChats: () => void;
   unListenToNewChats: () => void;
+  listenToUpdatedChat: () => void;
+  unListenToUpdatedChat: () => void;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -218,18 +221,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const selectedChat = get().selectedChat;
     if (!selectedChat) return;
 
-    const socket = useAuthStore.getState().socket;
-    if (!socket) return;
+    withSocket((socket) => {
+      socket.off("newMessage");
 
-    // New message listener
-    socket.on("newMessage", (newMessage) => {
-      const { selectedChat, messages } = get();
-      if (
-        !selectedChat ||
-        newMessage.chat.toString() !== selectedChat._id.toString()
-      )
-        return;
-      set({ messages: [...messages, newMessage] });
+      socket.on("newMessage", (newMessage) => {
+        const { selectedChat, messages } = get();
+        if (!selectedChat || newMessage.chat !== selectedChat._id) return;
+        set({ messages: [...messages, newMessage] });
+      });
     });
   },
 
@@ -239,21 +238,53 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   listenToNewChats: () => {
-    const socket = useAuthStore.getState().socket;
-    if (!socket) return;
+    withSocket((socket) => {
+      socket.off("newChat");
 
-    // Create chat listener
-    socket.on("newChat", (chat) => {
-      const { chats } = get();
-
-      if (chats.find((c) => c._id === chat._id)) return; // Avoid duplicates
-
-      set({ chats: [chat, ...chats] });
+      socket.on("newChat", (chat) => {
+        const { chats } = get();
+        if (!chats.find((c) => c._id === chat._id)) {
+          set({ chats: [chat, ...chats] });
+        }
+      });
     });
   },
 
   unListenToNewChats: () => {
     const socket = useAuthStore.getState().socket;
     socket?.off("newChat");
+  },
+
+  listenToUpdatedChat: () => {
+    withSocket((socket) => {
+      socket.off("updatedChat");
+
+      socket.on("updatedChat", (updatedChat: Chat) => {
+        const { chats, selectedChat } = get();
+
+        const chatExists = chats.some((chat) => chat._id === updatedChat._id);
+
+        // Update existing chat list
+        let newChats = chats.map((chat) =>
+          chat._id === updatedChat._id ? { ...chat, ...updatedChat } : chat
+        );
+
+        // Add chat if it doesn't exist
+        if (!chatExists) {
+          newChats = [updatedChat, ...newChats];
+        }
+
+        set({ chats: newChats });
+
+        // Update selected chat if it's the one being updated
+        if (selectedChat?._id === updatedChat._id) {
+          set({ selectedChat: { ...selectedChat, ...updatedChat } });
+        }
+      });
+    });
+  },
+  unListenToUpdatedChat: () => {
+    const socket = useAuthStore.getState().socket;
+    socket?.off("updatedChat");
   },
 }));

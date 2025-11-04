@@ -74,7 +74,7 @@ export const sendMessage = async (req: Request, res: Response) => {
     // Real time messaging functionality
     chat.users.forEach((user) => {
       const id = user._id;
-      if (id.toString() !== userId?.toString()) {
+      if (!id.equals(userId)) {
         const receiverSocketId = getSocketId(id.toString());
         if (receiverSocketId) {
           io.to(receiverSocketId).emit("newMessage", newMessage);

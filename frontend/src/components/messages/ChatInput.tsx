@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useChatStore } from "../../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { Image, Send, Smile, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../../store/useAuthStore";
 
@@ -153,6 +153,15 @@ const ChatInput = () => {
         </fieldset>
 
         <div className="flex gap-3">
+          {/* TODO: Implement Emoji Button */}
+          <button
+            type="button"
+            aria-label="Emoji menu"
+            className="bg-transparent p-0 duration-0"
+          >
+            <Smile />
+          </button>
+
           <label
             htmlFor="image-upload"
             className="cursor-pointer hover:opacity-50"
