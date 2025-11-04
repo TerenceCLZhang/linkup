@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import { useAuthStore } from "../../store/useAuthStore";
 import { LeftMessage, RightMessage } from "./Messages";
-import type { User } from "../../types/User";
 import ChatHeader from "./ChatHeader";
 
 const ChatContainer = () => {
