@@ -12,9 +12,11 @@ interface AuthStore {
   isUpdatingAvatar: boolean;
   socket: Socket | null;
   onlineUsers: Set<string>;
+
   checkAuth: () => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   verifyEmail: (code: string) => Promise<void>;
+  resendVerifcationEmail: () => Promise<void>;
   logOut: () => Promise<void>;
   logIn: (email: string, password: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
@@ -84,6 +86,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  resendVerifcationEmail: async () => {
+    try {
+      await axiosInstance.get("/auth/resend-verification-email");
+      toast.success("Verifcation email resent.");
+    } catch (error) {
+      storeAPIErrors(error);
     }
   },
 

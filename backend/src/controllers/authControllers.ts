@@ -6,6 +6,7 @@ import { sendEmail } from "../utils/email.js";
 import crypto from "crypto";
 import { ENV } from "../config/env.js";
 import cloudinary from "../config/cloudinary.js";
+import { sendVerificationEmail } from "../utils/sendVerificationEmail.js";
 
 export const signUp = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -52,12 +53,7 @@ export const signUp = async (req: Request, res: Response) => {
 
     handleJWT(res, user._id);
 
-    sendEmail({
-      to: email,
-      name,
-      subject: "LinkUp - Verify your Email",
-      text: `Your verification code is: ${verificationToken}.\n\n Enter this code on the verification page to complete your registration.\n\n This code will expire in 1 day.`,
-    });
+    sendVerificationEmail(email, name, verificationToken);
 
     const userObj = user?.toObject();
 
@@ -349,6 +345,70 @@ export const checkAuth = (req: Request, res: Response) => {
   try {
     return res.json({ success: true, user: req.user });
   } catch (error) {
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const resendVerificationEmail = async (req: Request, res: Response) => {
+  const email = req.user!.email;
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is required." });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    if (user.isVerified) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User is already verified." });
+    }
+
+    // Rate limit: prevent resending if token was sent less than 24 hours - 60 seconds ago
+    const now = new Date();
+
+    if (user.verificationTokenExpiresAt) {
+      const lastSentAt = new Date(
+        user.verificationTokenExpiresAt.getTime() - 24 * 60 * 60 * 1000
+      ); // token creation time
+      const cooldownEnd = new Date(lastSentAt.getTime() + 60 * 1000); // add 60 seconds
+
+      if (now < cooldownEnd) {
+        return res.status(429).json({
+          success: false,
+          message:
+            "Please wait 60 seconds before requesting a new verification email.",
+        });
+      }
+    }
+
+    // Generate new verification token
+    const newToken = Math.floor(100000 + Math.random() * 900000).toString();
+    const newExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day
+
+    user.verificationToken = newToken;
+    user.verificationTokenExpiresAt = newExpiry;
+
+    await user.save();
+
+    // Send verification email
+    await sendVerificationEmail(email, user.name, newToken);
+
+    return res.json({
+      success: true,
+      message: "Verification email resent successfully.",
+    });
+  } catch (error) {
+    console.error("Error resending verification email:", error);
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };
