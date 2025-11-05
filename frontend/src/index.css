@@ -81,6 +81,6 @@
   }
 
   .skeleton {
-    @apply animate-pulse bg-neutral-200 rounded-full;
+    @apply animate-pulse bg-neutral-200 rounded-lg;
   }
 }

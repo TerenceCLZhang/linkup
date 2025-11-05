@@ -1,6 +1,6 @@
-import { convertTimeAndDate } from "../../lib/convertDate";
-import type { Message } from "../../types/Message";
-import type { User } from "../../types/User";
+import type { User } from "../../../types/User";
+import { convertTimeAndDate } from "../../../lib/convertDate";
+import type { Message } from "../../../types/Message";
 
 export const LeftMessage = ({
   message,

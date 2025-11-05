@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import ChatHeader from "./ChatHeader";
 import MessageBubble from "./Messages/MessageBubble";
+import ChatContainerSkeleton from "../skeletons/ChatContainerSkeleton";
 
 const ChatContainer = () => {
   const {
@@ -34,11 +35,7 @@ const ChatContainer = () => {
   }, [getMessages, listenToMessages, unListenToMessages, selectedChat]);
 
   if (isMessagesLoading) {
-    return (
-      <div className="flex-1 p-5 flex justify-center items-center">
-        Loading...
-      </div>
-    );
+    return <ChatContainerSkeleton />;
   }
 
   if (!selectedChat) {
