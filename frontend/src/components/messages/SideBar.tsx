@@ -12,14 +12,26 @@ const SideBar = () => {
     getChats,
     listenToNewChats,
     unListenToNewChats,
+    listenToRemoveChat,
+    unListenToRemoveChat,
   } = useChatStore();
 
   useEffect(() => {
     getChats();
     listenToNewChats();
+    listenToRemoveChat();
 
-    return () => unListenToNewChats();
-  }, [getChats, listenToNewChats, unListenToNewChats]);
+    return () => {
+      unListenToNewChats();
+      unListenToRemoveChat();
+    };
+  }, [
+    getChats,
+    listenToNewChats,
+    listenToRemoveChat,
+    unListenToNewChats,
+    unListenToRemoveChat,
+  ]);
 
   return (
     <aside className="p-5 flex flex-col gap-5 bg-neutral-50 rounded-lg ">

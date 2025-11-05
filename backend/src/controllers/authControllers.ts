@@ -412,3 +412,20 @@ export const resendVerificationEmail = async (req: Request, res: Response) => {
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };
+
+export const getUserData = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id).select("-password");
+
+    return res.json({
+      success: true,
+      message: "User data successfully fetched.",
+      user,
+    });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};

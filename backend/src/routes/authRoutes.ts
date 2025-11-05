@@ -2,6 +2,7 @@ import express from "express";
 import {
   checkAuth,
   forgotPassword,
+  getUserData,
   logIn,
   logOut,
   resendVerificationEmail,
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router.get("/check-auth", protectRoute, checkAuth); // Used for when the user refreshes page
 router.get("/resend-verification-email", protectRoute, resendVerificationEmail);
+router.get("/user/:id", protectRoute, getUserData);
 
 router.post("/signup", signUp);
 router.post("/login", logIn);

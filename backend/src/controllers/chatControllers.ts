@@ -380,7 +380,23 @@ export const removeGroupChatUser = async (req: Request, res: Response) => {
       .populate("groupAdmin", "-password")
       .populate("users", "-password");
 
-    // TODO: Implement web scokets
+    // Send web socket event to update chat
+    chat.users.forEach((user) => {
+      if (!user.equals(userId)) {
+        const receiverSocketId = getSocketId(user.toString());
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("updatedChat", updatedChat);
+        }
+      }
+    });
+
+    // Send web socket event to remove chat from deleted user's chat list
+    const deletedUserSocketId = getSocketId(userToRemove._id.toString());
+    if (deletedUserSocketId) {
+      io.to(deletedUserSocketId).emit("removeChat", {
+        chatId: updatedChat?._id,
+      });
+    }
 
     return res.json({
       success: true,

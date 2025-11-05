@@ -31,6 +31,8 @@ interface ChatStore {
   unListenToNewChats: () => void;
   listenToUpdatedChat: () => void;
   unListenToUpdatedChat: () => void;
+  listenToRemoveChat: () => void;
+  unListenToRemoveChat: () => void;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -283,8 +285,32 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       });
     });
   },
+
   unListenToUpdatedChat: () => {
     const socket = useAuthStore.getState().socket;
     socket?.off("updatedChat");
+  },
+
+  listenToRemoveChat: () => {
+    withSocket((socket) => {
+      socket.off("removeChat");
+
+      socket.on("removeChat", (data: { chatId: string }) => {
+        const { chatId } = data;
+        const { chats } = get();
+
+        console.log(chatId);
+
+        set({
+          chats: chats.filter((c) => c._id !== chatId),
+          selectedChat: null,
+        });
+      });
+    });
+  },
+
+  unListenToRemoveChat: () => {
+    const socket = useAuthStore.getState().socket;
+    socket?.off("removeChat");
   },
 }));
