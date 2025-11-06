@@ -83,7 +83,7 @@ const GroupModal = ({
             <button
               type="button"
               onClick={addEmail}
-              className="button-primary"
+              className="button-primary button-padding"
               disabled={emails.length >= 5 || isLoading}
             >
               Add
@@ -99,7 +99,7 @@ const GroupModal = ({
                 <button
                   type="button"
                   onClick={() => removeEmail(email)}
-                  className="text-red-500 font-bold p-0 bg-transparent"
+                  className="text-red-500 font-bold bg-transparent"
                 >
                   <X />
                 </button>

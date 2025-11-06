@@ -77,7 +77,7 @@ const LogInForm = () => {
           />
           <button
             type="button"
-            className="bg-transparent p-0 absolute right-2 top-1/2 -translate-y-1/2"
+            className="bg-transparent absolute right-2 top-1/2 -translate-y-1/2"
             onClick={() => setShowPassword(!showPassword)}
             aria-label={showPassword ? "Hide Password" : "Show Password"}
           >

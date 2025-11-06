@@ -93,7 +93,7 @@ const GroupSettingsModal = ({
             <button
               type="button"
               onClick={addEmail}
-              className="button-primary"
+              className="button-primary button-padding"
               disabled={emails.length + selectedChat!.users.length >= 5}
             >
               Add
@@ -109,7 +109,7 @@ const GroupSettingsModal = ({
                 <button
                   type="button"
                   onClick={() => removeEmail(email)}
-                  className="text-red-500 font-bold p-0 bg-transparent"
+                  className="text-red-500 font-bold bg-transparent"
                 >
                   <X />
                 </button>
@@ -120,7 +120,7 @@ const GroupSettingsModal = ({
 
         <button
           type="submit"
-          className="button-primary w-full"
+          className="button-primary w-full button-padding"
           disabled={name === selectedChat?.chatName && emails.length === 0}
         >
           Update Group

@@ -17,7 +17,7 @@ const FormSubmitBtn = ({
   return (
     <button
       type="submit"
-      className="button-primary w-full mt-2"
+      className="button-primary w-full button-padding"
       disabled={disabled}
     >
       {authLoading || chatLoading ? (

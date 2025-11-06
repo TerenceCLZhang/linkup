@@ -1,4 +1,4 @@
-import { Settings, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import LogOutBtn from "./auth/LogOutBtn";
 import { Link } from "react-router-dom";
@@ -25,7 +25,7 @@ const NavBar = () => {
         <div className="flex gap-3">
           {authUser && (
             <>
-              <button>
+              <button type="button" className="button-padding">
                 <Link to={"/profile"} className="button-icon-text">
                   <User /> Profile
                 </Link>
@@ -34,10 +34,6 @@ const NavBar = () => {
               <LogOutBtn />
             </>
           )}
-
-          <button type="button" aria-label="Settings" title="Settings">
-            <Settings />
-          </button>
         </div>
       </div>
     </header>

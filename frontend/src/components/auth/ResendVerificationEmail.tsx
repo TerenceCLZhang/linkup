@@ -36,7 +36,7 @@ const ResendVerificationEmail = () => {
         <button
           type="button"
           onClick={handleResend}
-          className={`bg-transparent p-0 text-primary ${
+          className={`bg-transparent  text-primary ${
             !sending && "hover:underline hover:opacity-100"
           }`}
           disabled={sending}

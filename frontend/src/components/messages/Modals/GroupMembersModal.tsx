@@ -64,7 +64,7 @@ const GroupMembersModal = ({
           <div className="flex gap-5">
             <button
               type="button"
-              className="p-0 text-red-500"
+              className="text-red-500"
               onClick={() => setToRemoveUser(null)}
               disabled={isLoading}
             >
@@ -72,7 +72,7 @@ const GroupMembersModal = ({
             </button>
             <button
               type="button"
-              className="p-0 text-accent"
+              className="text-accent"
               onClick={handleRemoveUser}
               disabled={isLoading}
             >

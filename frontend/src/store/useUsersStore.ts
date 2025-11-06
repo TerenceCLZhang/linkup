@@ -3,12 +3,12 @@ import type { User } from "../types/User";
 import { axiosInstance } from "../lib/axios";
 import { storeAPIErrors } from "../lib/storeAPIErrors";
 
-interface UserStore {
+interface UsersStore {
   userCache: Record<string, User>;
   getUserById: (id: string) => Promise<User>;
 }
 
-export const useUserStore = create<UserStore>((set, get) => ({
+export const useUsersStore = create<UsersStore>((set, get) => ({
   userCache: {},
 
   getUserById: async (id: string) => {

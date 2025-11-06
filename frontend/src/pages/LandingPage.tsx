@@ -22,10 +22,10 @@ const LandingPage = () => {
             instantly.
           </p>
           <div className="flex gap-5">
-            <button type="button">
+            <button type="button" className="button-padding">
               <Link to="/login">Log In</Link>
             </button>
-            <button type="button" className="button-primary">
+            <button type="button" className="button-primary button-padding">
               <Link to="/signup">Sign Up</Link>
             </button>
           </div>

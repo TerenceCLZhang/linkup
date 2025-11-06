@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { useUserStore } from "../store/useUserStore";
+import { useUsersStore } from "../store/useUsersStore";
 import type { User } from "../types/User";
 
 export const useSender = (senderId: string) => {
   const { authUser } = useAuthStore();
-  const { getUserById } = useUserStore();
+  const { getUserById } = useUsersStore();
   const [sender, setSender] = useState<User | null>(null);
 
   useEffect(() => {
