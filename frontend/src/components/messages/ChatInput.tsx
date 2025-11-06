@@ -188,7 +188,6 @@ const ChatInput = () => {
         </fieldset>
 
         <div className="flex gap-3">
-          {/* TODO: Implement Emoji Button */}
           <button
             type="button"
             aria-label="Emoji menu"
