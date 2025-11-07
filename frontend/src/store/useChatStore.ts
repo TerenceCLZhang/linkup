@@ -44,7 +44,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   selectedChat: null,
   isChatsLoading: false,
   isMessagesLoading: false,
-  isSoundEnabled: Boolean(localStorage.getItem("isSoundEnabled")),
+  isSoundEnabled: true, // Boolean(localStorage.getItem("isSoundEnabled"))
   isLoading: false,
   isUpdatingGroupChatImage: false,
 
@@ -84,20 +84,34 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   sendMessage: async (text?: string, image?: string) => {
+    const { selectedChat, chats, isSoundEnabled, messages } = get();
+
     try {
       const res = await axiosInstance.post(
-        `/messages/send/${get().selectedChat?._id}`,
+        `/messages/send/${selectedChat?._id}`,
         {
           text,
           image,
         }
       );
 
+      if (isSoundEnabled) {
+        const audio = new Audio("/sound/sent.wav");
+        audio.play().catch((error) => {
+          console.error("Error playing sound", error);
+        });
+      }
+
+      const updatedChat = {
+        ...selectedChat!,
+        latestMessage: res.data.newMessage,
+      };
+
       set({
-        messages: [...get().messages, res.data.newMessage],
+        messages: [...messages, res.data.newMessage],
         chats: [
-          get().selectedChat as Chat,
-          ...get().chats.filter((chat) => chat._id !== get().selectedChat?._id),
+          updatedChat,
+          ...chats.filter((chat) => chat._id !== updatedChat._id),
         ],
       });
     } catch (error) {
@@ -255,11 +269,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const selectedChat = get().selectedChat;
     if (!selectedChat) return;
 
+    // TODO: Re order chat list when new message appears
+
+    // TODO: Add notification sound when a user receives a message and the chat is not the selectedChat
+
     withSocket((socket) => {
       socket.off("newMessage");
 
       socket.on("newMessage", (newMessage) => {
         const { selectedChat, messages } = get();
+
         if (!selectedChat || newMessage.chat !== selectedChat._id) return;
         set({
           messages: [...messages, newMessage],

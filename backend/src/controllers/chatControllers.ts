@@ -13,7 +13,13 @@ export const getUserChats = async (req: Request, res: Response) => {
     })
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
-      .populate("latestMessage")
+      .populate({
+        path: "latestMessage",
+        populate: {
+          path: "sender",
+          select: "-password",
+        },
+      })
       .sort({ updatedAt: -1 }); // get latest first
 
     return res.json({

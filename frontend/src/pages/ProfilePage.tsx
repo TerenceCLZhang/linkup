@@ -8,7 +8,7 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <div className="container w-125 bg-secondary  p-10 rounded-lg flex flex-col items-center justify-center gap-5">
+      <div className="container w-125 bg-secondary  p-10 rounded-lg flex flex-col items-center justify-center gap-5 mt-15">
         <div className="text-center space-y-3">
           <h2 className="text-4xl">Profile</h2>
           <span>Your profile information</span>

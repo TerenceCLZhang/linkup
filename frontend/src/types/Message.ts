@@ -1,5 +1,7 @@
+import type { User } from "./User";
+
 export interface Message {
-  senderId: string;
+  sender: User;
   chat: string;
   text: string;
   image: string;

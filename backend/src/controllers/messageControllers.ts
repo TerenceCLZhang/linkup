@@ -15,9 +15,9 @@ export const getMessages = async (req: Request, res: Response) => {
   }
 
   try {
-    const useId = req.user?._id;
-
-    const messages = await Message.find({ chat: id });
+    const messages = await Message.find({ chat: id })
+      .populate("sender", "-password")
+      .sort({ createdAt: 1 });
 
     return res.json({ success: true, message: "Messages found.", messages });
   } catch (error) {
@@ -59,13 +59,15 @@ export const sendMessage = async (req: Request, res: Response) => {
 
     // Create new message
     const newMessage = new Message({
-      senderId: userId,
+      sender: userId,
       chat: chatId,
       text: text || "",
       image: imageUrl,
     });
 
     await newMessage.save();
+
+    await newMessage.populate("sender", "-password");
 
     // Update chat's latestMessage
     chat.latestMessage = newMessage._id;
