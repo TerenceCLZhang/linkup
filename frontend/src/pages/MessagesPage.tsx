@@ -1,5 +1,5 @@
 import SideBar from "../components/messages/SideBar";
-import ChatContainer from "../components/messages/ChatContainer";
+import MessagesContainer from "../components/messages/MessagesContainer";
 import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 
@@ -29,7 +29,7 @@ const MessagesPage = () => {
   return (
     <div className="bg-secondary container flex justify-between rounded-lg h-[75vh] max-h-5xl w-full overflow-hidden mt-15">
       <SideBar />
-      <ChatContainer />
+      <MessagesContainer />
     </div>
   );
 };

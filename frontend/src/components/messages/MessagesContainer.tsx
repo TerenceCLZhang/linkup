@@ -6,7 +6,7 @@ import ChatHeader from "./ChatHeader";
 import MessageBubble from "./Messages/MessageBubble";
 import ChatContainerSkeleton from "../skeletons/ChatContainerSkeleton";
 
-const ChatContainer = () => {
+const MessagesContainer = () => {
   const { messages, getMessages, isMessagesLoading, selectedChat } =
     useChatStore();
 
@@ -14,11 +14,38 @@ const ChatContainer = () => {
 
   // Scroll to the bottom of the chat
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const scrollToBottom = () => {
       bottomRef.current?.scrollIntoView({ behavior: "auto" });
-    }, 100); // 100ms delay
+    };
 
-    return () => clearTimeout(timeout);
+    // Find all images inside chat container
+    const chatContainer = bottomRef.current?.parentElement;
+    if (!chatContainer) return;
+
+    const images = chatContainer.querySelectorAll("img");
+    let loadedCount = 0;
+
+    if (images.length === 0) {
+      scrollToBottom();
+      return;
+    }
+
+    const onLoad = () => {
+      loadedCount += 1;
+      if (loadedCount === images.length) scrollToBottom();
+    };
+
+    images.forEach((img) => {
+      if (img.complete) {
+        loadedCount += 1;
+      } else {
+        img.addEventListener("load", onLoad, { once: true });
+        img.addEventListener("error", onLoad, { once: true });
+      }
+    });
+
+    // If all images were already loaded
+    if (loadedCount === images.length) scrollToBottom();
   }, [messages]);
 
   useEffect(() => {
@@ -63,4 +90,4 @@ const NoChatSelectedContainer = () => {
   );
 };
 
-export default ChatContainer;
+export default MessagesContainer;
