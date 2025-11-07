@@ -20,9 +20,11 @@ const ChatContainer = () => {
 
   // Scroll to the bottom of the chat
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "auto" });
-    }
+    const timeout = setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    }, 100); // 100ms delay
+
+    return () => clearTimeout(timeout);
   }, [messages]);
 
   useEffect(() => {
