@@ -266,20 +266,33 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   listenToMessages: () => {
-    const selectedChat = get().selectedChat;
-    if (!selectedChat) return;
-
-    // TODO: Re order chat list when new message appears
-
-    // TODO: Add notification sound when a user receives a message and the chat is not the selectedChat
+    // TODO: Fix notifcation error - Uncaught (in promise) NotAllowedError: play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD
 
     withSocket((socket) => {
       socket.off("newMessage");
 
-      socket.on("newMessage", (newMessage) => {
-        const { selectedChat, messages } = get();
+      socket.on("newMessage", (newMessage: Message) => {
+        const { selectedChat, messages, isSoundEnabled, chats } = get();
 
-        if (!selectedChat || newMessage.chat !== selectedChat._id) return;
+        set({
+          chats: [
+            ...chats
+              .filter((chat) => chat._id === newMessage.chat)
+              .map((chat) => ({ ...chat, latestMessage: newMessage })),
+            ...chats.filter((chat) => chat._id !== newMessage.chat),
+          ],
+        });
+
+        if (!selectedChat || newMessage.chat !== selectedChat._id) {
+          if (isSoundEnabled) {
+            const audio = new Audio("/sound/receive.wav");
+            audio.play().catch((error) => {
+              console.error("Error playing sound", error);
+            });
+          }
+          return;
+        }
+
         set({
           messages: [...messages, newMessage],
         });

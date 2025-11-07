@@ -7,14 +7,8 @@ import MessageBubble from "./Messages/MessageBubble";
 import ChatContainerSkeleton from "../skeletons/ChatContainerSkeleton";
 
 const ChatContainer = () => {
-  const {
-    messages,
-    getMessages,
-    isMessagesLoading,
-    selectedChat,
-    listenToMessages,
-    unListenToMessages,
-  } = useChatStore();
+  const { messages, getMessages, isMessagesLoading, selectedChat } =
+    useChatStore();
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,11 +24,8 @@ const ChatContainer = () => {
   useEffect(() => {
     if (selectedChat) {
       getMessages(selectedChat._id);
-      listenToMessages();
     }
-
-    return () => unListenToMessages();
-  }, [getMessages, listenToMessages, unListenToMessages, selectedChat]);
+  }, [getMessages, selectedChat]);
 
   if (isMessagesLoading) {
     return <ChatContainerSkeleton />;
