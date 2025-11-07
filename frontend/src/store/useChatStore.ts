@@ -5,6 +5,7 @@ import type { Message } from "../types/Message";
 import { useAuthStore } from "./useAuthStore";
 import type { Chat } from "../types/Chat";
 import { withSocket } from "../lib/withSocket";
+import toast from "react-hot-toast";
 
 interface ChatStore {
   chats: Chat[];
@@ -14,6 +15,7 @@ interface ChatStore {
   isMessagesLoading: boolean;
   isSoundEnabled: boolean;
   isLoading: boolean;
+  isUpdatingGroupChatImage: boolean;
 
   toggleSound: () => void;
   setSelectedChat: (chat: Chat) => void;
@@ -24,6 +26,7 @@ interface ChatStore {
   createGroupChat: (name: string, emails: string[]) => Promise<void>;
   updateGroupChat: (name: string, emails: string[]) => Promise<void>;
   removeGroupChatUser: (email: string) => Promise<void>;
+  updateGroupChatImage: (image: string) => Promise<void>;
 
   listenToMessages: () => void;
   unListenToMessages: () => void;
@@ -43,6 +46,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   isMessagesLoading: false,
   isSoundEnabled: Boolean(localStorage.getItem("isSoundEnabled")),
   isLoading: false,
+  isUpdatingGroupChatImage: false,
 
   toggleSound: () => {
     localStorage.setItem("isSoundEnabled", (!get().isSoundEnabled).toString());
@@ -216,6 +220,27 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       storeAPIErrors(error);
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  updateGroupChatImage: async (image: string) => {
+    set({ isUpdatingGroupChatImage: true });
+
+    try {
+      const res = await axiosInstance.patch(
+        `chats/group-chat/image/${get().selectedChat?._id}`,
+        {
+          image,
+        }
+      );
+
+      set({ selectedChat: res.data.chat });
+
+      toast.success("Image successfully updated.");
+    } catch (error: unknown) {
+      storeAPIErrors(error);
+    } finally {
+      set({ isUpdatingGroupChatImage: false });
     }
   },
 

@@ -26,17 +26,15 @@ const ChatInput = () => {
       },
     });
 
-  const [inputNumLines, setInputNumLines] = useState(1);
   const [imagePreview, setImagePreview] = useState("");
   const [showEmojiMenu, setShowEmojiMenu] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const emojiMenuRef = useRef<HTMLDivElement | null>(null);
 
   const { authUser } = useAuthStore();
   const { selectedChat, sendMessage } = useChatStore();
-
-  const INPUT_MAX_LINES = 3;
 
   // -- Handle image inputs
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,18 +97,21 @@ const ChatInput = () => {
       return;
     }
 
+    setSending(true);
+
     try {
       await sendMessage(text, image);
 
       reset();
       setImagePreview("");
-      setInputNumLines(1);
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     } catch (error) {
       console.error("Error sending message", error);
+    } finally {
+      setSending(false);
     }
   };
 
@@ -131,6 +132,8 @@ const ChatInput = () => {
               type="button"
               className="absolute right-2 top-2 p-1 rounded-full bg-red-700 text-white hover:opacity-100 hover:scale-105"
               onClick={removeImage}
+              disabled={sending}
+              aria-disabled={sending}
             >
               <X />
             </button>
@@ -155,35 +158,13 @@ const ChatInput = () => {
                 : selectedChat?.users.find((u) => u._id !== authUser?._id)?.name
             }`}
             className="border-neutral-200 resize-none"
-            rows={inputNumLines}
+            rows={1}
+            disabled={sending}
+            aria-disabled={sending}
             data-gramm="false"
             data-gramm_editor="false"
             data-enable-grammarly="false"
-            onKeyDown={(e) => {
-              // Send new message
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(onSubmit)();
-              }
-
-              // New line
-              if (
-                e.key === "Enter" &&
-                e.shiftKey &&
-                inputNumLines < INPUT_MAX_LINES
-              ) {
-                setInputNumLines((prev) => prev + 1);
-              }
-            }}
-            {...register("text", {
-              onChange: (e) => {
-                const val = e.target.value;
-                setValue("text", val);
-                setInputNumLines(
-                  Math.min(val.split("\n").length, INPUT_MAX_LINES)
-                );
-              },
-            })}
+            {...register("text")}
           />
         </fieldset>
 
@@ -193,6 +174,8 @@ const ChatInput = () => {
             aria-label="Emoji menu"
             className="bg-transparent duration-0"
             onClick={() => setShowEmojiMenu(!showEmojiMenu)}
+            disabled={sending}
+            aria-disabled={sending}
           >
             <Smile />
           </button>
@@ -216,6 +199,8 @@ const ChatInput = () => {
               className="hidden"
               ref={fileInputRef}
               onChange={handleImageChange}
+              disabled={sending}
+              aria-disabled={sending}
             />
           </label>
 
@@ -223,6 +208,7 @@ const ChatInput = () => {
             type="submit"
             aria-label="Send message"
             className="bg-transparent duration-0"
+            disabled={sending}
           >
             <Send />
           </button>

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Chat from "../models/Chat.js";
 import User from "../models/User.js";
 import { getSocketId, io } from "../config/socket.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const getUserChats = async (req: Request, res: Response) => {
   const userId = req.user!._id;
@@ -405,6 +406,77 @@ export const removeGroupChatUser = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error updating group chat", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const updateGroupChatImage = async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const { image } = req.body;
+  const userId = req.user!._id;
+
+  // Check if avatar is provided
+  if (!image) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Image not provided." });
+  }
+
+  try {
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Chat not found." });
+    }
+
+    if (!chat.isGroupChat) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Chat is not a group chat." });
+    }
+
+    if (!chat?.groupAdmin?.equals(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Only group admins can change the group chat image.",
+      });
+    }
+
+    // Upload to cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(image, {
+      folder: "linkup/group-chat-images",
+      public_id: `${chatId}-image`,
+      overwrite: true,
+    });
+
+    // Update DB with cloudinary url
+    chat.image = uploadResponse.secure_url;
+
+    await chat.save();
+
+    const updatedChat = await Chat.findById(chatId)
+      .populate("groupAdmin", "-password")
+      .populate("users", "-password");
+
+    // Send web socket event to update chat
+    chat.users.forEach((user) => {
+      if (!user.equals(userId)) {
+        const receiverSocketId = getSocketId(user.toString());
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("updatedChat", updatedChat);
+        }
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: `Chat image has been successfully updated.`,
+      chat: updatedChat,
+    });
+  } catch (error) {
+    console.error("Error with updating avatar", error);
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };

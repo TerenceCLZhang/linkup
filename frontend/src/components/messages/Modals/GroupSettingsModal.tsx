@@ -3,13 +3,19 @@ import Modal from "../../ui/Modal";
 import { useChatStore } from "../../../store/useChatStore";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
+import ImageUploaderCircle from "../../ui/ImageUploaderCircle";
 
 const GroupSettingsModal = ({
   setShowGroupSettingsModal,
 }: {
   setShowGroupSettingsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { selectedChat, updateGroupChat } = useChatStore();
+  const {
+    selectedChat,
+    updateGroupChat,
+    updateGroupChatImage,
+    isUpdatingGroupChatImage,
+  } = useChatStore();
 
   // TODO: Implemnt Change Group Image
 
@@ -62,7 +68,16 @@ const GroupSettingsModal = ({
     <Modal onClose={() => setShowGroupSettingsModal(false)}>
       <h2 className="text-3xl mb-5">Edit Group Chat</h2>
 
-      <form onSubmit={onSubmit}>
+      <div className="border-b border-neutral-300 pb-5">
+        <ImageUploaderCircle
+          currentImage={selectedChat?.image}
+          defaultImage="/default_group.svg"
+          onUpload={updateGroupChatImage}
+          isUploading={isUpdatingGroupChatImage}
+        />
+      </div>
+
+      <form onSubmit={onSubmit} className="pt-5">
         <fieldset>
           <label htmlFor="name">Group Name</label>
           <input
