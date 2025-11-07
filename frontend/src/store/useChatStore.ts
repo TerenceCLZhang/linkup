@@ -92,7 +92,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           image,
         }
       );
-      set({ messages: [...get().messages, res.data.newMessage] });
+
+      set({
+        messages: [...get().messages, res.data.newMessage],
+        chats: [
+          get().selectedChat as Chat,
+          ...get().chats.filter((chat) => chat._id !== get().selectedChat?._id),
+        ],
+      });
     } catch (error) {
       storeAPIErrors(error);
     }
@@ -254,7 +261,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       socket.on("newMessage", (newMessage) => {
         const { selectedChat, messages } = get();
         if (!selectedChat || newMessage.chat !== selectedChat._id) return;
-        set({ messages: [...messages, newMessage] });
+        set({
+          messages: [...messages, newMessage],
+        });
       });
     });
   },

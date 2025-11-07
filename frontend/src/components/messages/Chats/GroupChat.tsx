@@ -1,8 +1,11 @@
+import { useSender } from "../../../hooks/useSender";
 import { useChatStore } from "../../../store/useChatStore";
 import type { Chat } from "../../../types/Chat";
 
 const GroupChat = ({ chat }: { chat: Chat }) => {
   const { setSelectedChat } = useChatStore();
+
+  const sender = useSender(chat.latestMessage?.senderId ?? null);
 
   return (
     <button
@@ -22,6 +25,11 @@ const GroupChat = ({ chat }: { chat: Chat }) => {
 
       <div className="flex flex-col gap-1 text-left overflow-hidden">
         <span className="font-semibold truncate">{chat.chatName}</span>
+        {chat.latestMessage && (
+          <span className="text-xs italic truncate">
+            {sender?.name}: {chat.latestMessage?.text}
+          </span>
+        )}
       </div>
     </button>
   );

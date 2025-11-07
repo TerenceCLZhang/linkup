@@ -4,7 +4,6 @@ import type { User } from "../../types/User";
 const UserAvatar = ({
   user,
   size,
-  includeStatus = true,
 }: {
   user: User;
   size: "md" | "sm";
@@ -30,15 +29,6 @@ const UserAvatar = ({
             onlineUsers.has(user!._id) ? "bg-green-500" : "bg-neutral-500"
           }`}
         />
-      </div>
-
-      <div className="flex flex-col gap-1 text-left overflow-hidden max-w-50">
-        <span className="font-semibold truncate">{user!.name}</span>
-        {includeStatus && (
-          <span className="text-sm">
-            {onlineUsers.has(user!._id) ? "Online" : "Offline"}
-          </span>
-        )}
       </div>
     </div>
   );

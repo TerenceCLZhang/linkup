@@ -3,10 +3,14 @@ import { useAuthStore } from "../../../store/useAuthStore";
 import { useChatStore } from "../../../store/useChatStore";
 import type { Chat } from "../../../types/Chat";
 import UserAvatar from "../UserAvatar";
+import { useSender } from "../../../hooks/useSender";
 
 const OneOnOneChat = ({ chat }: { chat: Chat }) => {
   const { authUser } = useAuthStore();
   const { setSelectedChat } = useChatStore();
+
+  const sender = useSender(chat.latestMessage?.senderId ?? null);
+
 
   const otherUser = useMemo(
     () => chat?.users.find((u) => u._id !== authUser?._id),
@@ -17,9 +21,17 @@ const OneOnOneChat = ({ chat }: { chat: Chat }) => {
     <button
       type="button"
       onClick={() => setSelectedChat(chat)}
-      className="bg-transparent hover:bg-secondary p-1 w-full justify-start"
+      className="bg-transparent hover:bg-secondary p-1 w-full justify-start space-x-2"
     >
       <UserAvatar user={otherUser!} size="md" />
+      <div className="flex flex-col gap-1 text-left overflow-hidden max-w-50">
+        <span className="font-semibold">{otherUser?.name}</span>
+        {chat.latestMessage && (
+          <span className="text-xs italic truncate">
+            {sender?.name}: {chat.latestMessage?.text}
+          </span>
+        )}
+      </div>
     </button>
   );
 };

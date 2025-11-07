@@ -21,7 +21,8 @@ const OneOnOneChatHeader = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <UserAvatar user={otherUser!} size="sm" includeStatus={false} />
+      <UserAvatar user={otherUser!} size="sm" />
+      <span className="font-semibold">{otherUser?.name}</span>
     </div>
   );
 };

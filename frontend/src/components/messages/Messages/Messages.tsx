@@ -68,7 +68,7 @@ export const RightMessage = ({
               <img
                 src={message.image}
                 alt="Message image"
-                className="size-60"
+                className="w-full h-full object-cover"
               />
             </div>
           )}

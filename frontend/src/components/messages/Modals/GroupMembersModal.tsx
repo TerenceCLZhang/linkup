@@ -55,7 +55,7 @@ const GroupMembersModal = ({
         </div>
       ) : (
         <div className="flex gap-5 items-center">
-          <UserAvatar user={toRemoveUser} size="md" includeStatus={false} />
+          <UserAvatar user={toRemoveUser} size="md" />
           <span>
             {selectedChat?.groupAdmin?._id === authUser?._id
               ? "Are you sure you want to remove this user?"
