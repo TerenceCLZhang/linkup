@@ -1,6 +1,12 @@
 import type { User } from "../../../types/User";
 import { convertTimeAndDate } from "../../../lib/convertDate";
 import type { Message } from "../../../types/Message";
+import Linkify from "linkify-react";
+
+const linkifyOptions = {
+  target: "_blank",
+  rel: "noopener noreferrer",
+};
 
 export const LeftMessage = ({
   message,
@@ -38,7 +44,13 @@ export const LeftMessage = ({
             </div>
           )}
 
-          <p className="whitespace-pre-wrap">{message.text}</p>
+          <Linkify
+            as={"p"}
+            options={linkifyOptions}
+            className="whitespace-pre-wrap"
+          >
+            {message.text}
+          </Linkify>
         </div>
       </div>
     </div>
@@ -73,7 +85,13 @@ export const RightMessage = ({
             </div>
           )}
 
-          <p className="whitespace-pre-wrap">{message.text}</p>
+          <Linkify
+            as={"p"}
+            options={linkifyOptions}
+            className="whitespace-pre-wrap"
+          >
+            {message.text}
+          </Linkify>
         </div>
       </div>
 
