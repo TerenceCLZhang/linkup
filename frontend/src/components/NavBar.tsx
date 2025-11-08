@@ -7,7 +7,7 @@ const NavBar = () => {
   const { authUser } = useAuthStore();
 
   return (
-    <header className="container fixed w-full">
+    <header className="container fixed w-full x-padding bg-white z-20">
       <div className="flex items-center justify-between py-5">
         <h1 className="text-2xl font-bold h-15 p-1">
           <a href="/" className="flex items-center h-full gap-2">

@@ -57,7 +57,7 @@ const App = () => {
     <div className="flex items-center flex-col w-full">
       <NavBar />
 
-      <main className="flex items-center justify-center flex-col min-h-screen w-full">
+      <main className="flex items-center justify-center flex-col min-h-screen w-full x-padding">
         <Routes>
           {/* Public routes */}
           <Route

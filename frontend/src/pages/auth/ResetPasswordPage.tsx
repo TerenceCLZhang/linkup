@@ -31,7 +31,7 @@ const ResetPasswordPage = () => {
   }, [navigate, submitted, timeToRedirect]);
 
   return (
-    <div className="text-center space-y-7 w-100">
+    <div className="text-center space-y-7 w-100 ">
       <h2 className="text-4xl">Reset Password</h2>
 
       {!submitted ? (

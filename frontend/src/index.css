@@ -87,4 +87,8 @@
   .button-padding {
     @apply px-5 py-2;
   }
+
+  .x-padding {
+    @apply px-10;
+  }
 }

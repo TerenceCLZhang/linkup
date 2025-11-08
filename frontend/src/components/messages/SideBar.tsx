@@ -48,7 +48,7 @@ const SideBar = () => {
             </span>
           </div>
         ) : (
-          <div className="h-full overflow-y-auto space-y-4 pr-2">
+          <div className="h-full overflow-y-auto scrollbar space-y-4 pr-2">
             {chats.map((chat, i) => {
               if (chat.isGroupChat) return <GroupChat key={i} chat={chat} />;
               return <OneOnOneChat key={i} chat={chat} />;
