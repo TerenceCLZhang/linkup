@@ -191,6 +191,7 @@ const ChatInput = () => {
             htmlFor="image-upload"
             className="cursor-pointer hover:opacity-50"
             aria-label="Upload image"
+            title="Upload an image"
           >
             <Image className="w-7 h-7" />
             <input
@@ -202,7 +203,6 @@ const ChatInput = () => {
               onChange={handleImageChange}
               disabled={sending}
               aria-disabled={sending}
-              title="Upload an image"
             />
           </label>
 
