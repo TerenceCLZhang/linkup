@@ -13,12 +13,20 @@ const GroupChatHeaderBtns = () => {
 
   return (
     <div className="flex gap-5">
-      <button type="button" onClick={() => setShowUserModal(true)}>
+      <button
+        type="button"
+        onClick={() => setShowUserModal(true)}
+        title="Group members"
+      >
         <Users />
       </button>
 
       {selectedChat?.groupAdmin?._id === authUser?._id && (
-        <button type="button" onClick={() => setShowGroupSettingsModal(true)}>
+        <button
+          type="button"
+          onClick={() => setShowGroupSettingsModal(true)}
+          title="Group settings"
+        >
           <Settings />
         </button>
       )}

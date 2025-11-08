@@ -171,11 +171,12 @@ const ChatInput = () => {
         <div className="flex gap-3">
           <button
             type="button"
-            aria-label="Emoji menu"
+            aria-label="Emoji picker"
             className="bg-transparent duration-0"
             onClick={() => setShowEmojiMenu(!showEmojiMenu)}
             disabled={sending}
             aria-disabled={sending}
+            title="Emoji picker"
           >
             <Smile />
           </button>
@@ -201,6 +202,7 @@ const ChatInput = () => {
               onChange={handleImageChange}
               disabled={sending}
               aria-disabled={sending}
+              title="Upload an image"
             />
           </label>
 
@@ -209,6 +211,7 @@ const ChatInput = () => {
             aria-label="Send message"
             className="bg-transparent duration-0"
             disabled={sending}
+            title="Send"
           >
             <Send />
           </button>
