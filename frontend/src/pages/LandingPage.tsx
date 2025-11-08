@@ -1,29 +1,24 @@
 import { Link } from "react-router-dom";
 
-const LandingPage = () => {
+const LandingPageExtended = () => {
   return (
-    <div className="text-center">
-      <section className="max-w-2xl">
+    <div className="text-center min-h-screen flex flex-col justify-center mt-20">
+      {/* Hero Section */}
+      <section className="max-w-3xl mx-auto px-4 py-20 ">
         <div className="flex flex-col gap-10 items-center">
-          <div className="space-y-7">
-            <h2 className="text-7xl">
-              Link<span className="text-primary">Up</span>
-            </h2>
-            <span className="text-2xl">
-              Connect <span className="font-bold italic">instantly</span>. Chat
-              <span className="font-bold italic"> seamlessly</span>.
-            </span>
-          </div>
-          <p>
-            A real-time messaging platform built with the MERN stack that lets
-            you connect with friends, create group chats, and share media
-            instantly.
+          <h1 className="text-7xl font-extrabold">
+            Link<span className="text-primary">Up</span>
+          </h1>
+          <p className="text-2xl">
+            Connect <span className="font-bold italic">instantly</span>. Chat
+            <span className="font-bold italic"> seamlessly</span>. Share
+            <span className="font-bold italic"> effortlessly</span>.
           </p>
           <div className="flex gap-5">
-            <button type="button" className="button-padding">
+            <button className="button-padding">
               <Link to="/login">Log In</Link>
             </button>
-            <button type="button" className="button-primary button-padding">
+            <button className="button-primary button-padding">
               <Link to="/signup">Sign Up</Link>
             </button>
           </div>
@@ -33,4 +28,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage;
+export default LandingPageExtended;
