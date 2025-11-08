@@ -17,8 +17,6 @@ const GroupSettingsModal = ({
     isUpdatingGroupChatImage,
   } = useChatStore();
 
-  // TODO: Implemnt Change Group Image
-
   const [name, setName] = useState(selectedChat!.chatName || "");
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState<string[]>([]);
