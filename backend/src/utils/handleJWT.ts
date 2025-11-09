@@ -13,7 +13,7 @@ export const handleJWT = (res: Response, userId: Types.ObjectId) => {
   res.cookie("linkup-token", token, {
     httpOnly: true,
     secure: ENV.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 

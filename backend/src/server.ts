@@ -10,9 +10,6 @@ import { rateLimit } from "express-rate-limit";
 import bodyParser from "body-parser";
 import { app, server } from "./config/socket.js";
 import chatRoutes from "./routes/chatRoutes.js";
-import path from "path";
-
-const __dirname = path.resolve();
 
 app.use(
   cors({
