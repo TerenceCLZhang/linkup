@@ -1,6 +1,6 @@
 # LinkUp
 
-LinkUp is a real-time messaging platform built with the MERN stack, allowing users to chat instantly in a clean and modern interface.
+LinkUp is a real-time messaging platform built with the MERN stack, offering instant messaging in a clean and modern interface. Users can chat one-on-one or in groups, with full support for media sharing and live presence updates.
 
 ## Features
 
@@ -8,12 +8,14 @@ LinkUp is a real-time messaging platform built with the MERN stack, allowing use
 - Email verification and password reset functionality
 - Real-time user presence and status updates
 - Instant one-on-one messaging with live updates
+- Group chats for multiple participants
 - Image sharing in chat
 - API rate limiting for enhanced security and performance
 
 ## Tech Stack
 
 **Frontend**
+
 - React.js
 - TypeScript
 - Tailwind CSS
@@ -23,6 +25,7 @@ LinkUp is a real-time messaging platform built with the MERN stack, allowing use
 - Zod
 
 **Backend**
+
 - Node.js
 - Express.js
 - Socket.io
@@ -31,5 +34,6 @@ LinkUp is a real-time messaging platform built with the MERN stack, allowing use
 - Nodemailer
 
 **Database**
+
 - MongoDB
 - Cloudinary
