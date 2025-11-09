@@ -157,13 +157,18 @@ const ChatInput = () => {
                 ? selectedChat.chatName
                 : selectedChat?.users.find((u) => u._id !== authUser?._id)?.name
             }`}
-            className="border-neutral-200 resize-none"
+            className="border-neutral-200 resize-none field-sizing-content wrap-anywhere max-h-30"
             rows={1}
             disabled={sending}
             aria-disabled={sending}
             data-gramm="false"
             data-gramm_editor="false"
             data-enable-grammarly="false"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                handleSubmit(onSubmit)();
+              }
+            }}
             {...register("text")}
           />
         </fieldset>
