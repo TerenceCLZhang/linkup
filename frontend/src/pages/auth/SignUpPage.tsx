@@ -4,7 +4,7 @@ import AuthChatExample from "../../components/ui/AuthChatExample";
 
 const SignUpPage = () => {
   return (
-    <div className="container flex justify-between items-center gap-10 w-screen x-padding mmt-20 xl:mt-0">
+    <div className="container flex justify-between items-center gap-10 w-screen x-padding">
       <div className="flex-1 space-y-5 flex flex-col items-center justify-center">
         <div className="space-y-3 text-center">
           <h2 className="text-4xl">Sign Up</h2>

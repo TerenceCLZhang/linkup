@@ -30,7 +30,7 @@ const ForgotPasswordPage = () => {
         </div>
       )}
 
-      <button type="button" className="flex mx-auto mt-10 button-padding">
+      <button type="button" className="flex mx-auto button-padding">
         <Link to={"/login"} className="button-icon-text">
           <ArrowLeft /> Back to Log In
         </Link>

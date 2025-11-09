@@ -54,10 +54,10 @@ const App = () => {
   }
 
   return (
-    <div className="flex items-center flex-col w-full">
+    <div className="flex items-center flex-col w-full min-h-screen">
       <NavBar />
 
-      <main className="flex items-center justify-center flex-col min-h-screen w-full x-padding">
+      <main className="flex items-center justify-center flex-col w-full x-padding flex-1 container">
         <Routes>
           {/* Public routes */}
           <Route
@@ -122,6 +122,24 @@ const App = () => {
           />
         </Routes>
       </main>
+
+      <footer className="flex justify-between w-full x-padding container mb-2">
+        <p>
+          Made by{" "}
+          <a
+            href="https://terenceclzhang-portfolio.vercel.app/"
+            target="_blank"
+          >
+            Terence Zhang
+          </a>
+        </p>
+
+        <p>
+          <a href="https://github.com/TerenceCLZhang/linkup" target="_blank">
+            GitHub
+          </a>
+        </p>
+      </footer>
     </div>
   );
 };

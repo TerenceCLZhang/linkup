@@ -2,12 +2,18 @@ import { User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import LogOutBtn from "./auth/LogOutBtn";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const NavBar = () => {
   const { authUser } = useAuthStore();
 
   return (
-    <header className="container fixed w-full x-padding bg-white z-20">
+    <motion.header
+      className="container w-full bg-white x-padding"
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
       <div className="flex items-center justify-between py-5">
         <h1 className="text-2xl font-bold h-15 p-1">
           <a href="/" className="flex items-center h-full gap-2">
@@ -36,7 +42,7 @@ const NavBar = () => {
           )}
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 };
 

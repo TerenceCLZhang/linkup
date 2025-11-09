@@ -42,6 +42,10 @@
   p a {
     @apply text-primary hover:opacity-80 hover:underline;
   }
+
+  main {
+    @apply flex items-center justify-center flex-col w-full x-padding flex-1 h-full self-center justify-self-center;
+  }
 }
 
 @layer utility {
@@ -92,7 +96,19 @@
     @apply px-5 py-2;
   }
 
+  .landing-card {
+    @apply bg-secondary p-5 rounded-lg flex-1 space-y-3 shadow-lg flex items-center justify-center flex-col;
+  }
+
+  .landing-card span {
+    @apply text-5xl;
+  }
+
+  .landing-card h3 {
+    @apply text-3xl font-semibold;
+  }
+
   .x-padding {
-    @apply px-10;
+    @apply px-10 2xl:px-0;
   }
 }
