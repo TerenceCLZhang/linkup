@@ -27,6 +27,9 @@ interface AuthStore {
   disconnectSocket: () => void;
 }
 
+const BASE_URL =
+  import.meta.env.MODE === "production" ? "http://localhost:8080" : "/";
+
 export const useAuthStore = create<AuthStore>((set, get) => ({
   authUser: null,
   isLoading: false,
@@ -195,7 +198,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     const authUser = get().authUser;
     if (!authUser || get().socket?.connected) return;
 
-    const socket = io(import.meta.env.VITE_BASE_BACKEND_URL, {
+    const socket = io(BASE_URL, {
       withCredentials: true,
       query: {
         userId: authUser._id,
