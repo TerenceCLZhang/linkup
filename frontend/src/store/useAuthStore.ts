@@ -27,8 +27,7 @@ interface AuthStore {
   disconnectSocket: () => void;
 }
 
-const BASE_URL =
-  import.meta.env.MODE === "production" ? "http://localhost:8080" : "/";
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   authUser: null,
