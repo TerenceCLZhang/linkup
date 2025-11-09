@@ -1,6 +1,12 @@
-import { convertTimeAndDate } from "../../lib/convertDate";
-import type { Message } from "../../types/Message";
-import type { User } from "../../types/User";
+import type { User } from "../../../types/User";
+import { convertTimeAndDate } from "../../../lib/convertDate";
+import type { Message } from "../../../types/Message";
+import Linkify from "linkify-react";
+
+const linkifyOptions = {
+  target: "_blank",
+  rel: "noopener noreferrer",
+};
 
 export const LeftMessage = ({
   message,
@@ -21,7 +27,7 @@ export const LeftMessage = ({
 
       <div className="bg-neutral-50 w-fit p-3 rounded-xl max-w-[50%]">
         <div className="flex gap-2 items-center">
-          <span className="font-bold">{user.name}</span>
+          <span className="font-bold truncate flex-1">{user.name}</span>
           <span className="text-xs">
             {convertTimeAndDate(message.createdAt)}
           </span>
@@ -33,12 +39,18 @@ export const LeftMessage = ({
               <img
                 src={message.image}
                 alt="Message image"
-                className="size-60"
+                className="w-full h-full object-cover"
               />
             </div>
           )}
 
-          <p className="whitespace-pre-wrap">{message.text}</p>
+          <Linkify
+            as={"p"}
+            options={linkifyOptions}
+            className="whitespace-pre-wrap"
+          >
+            {message.text}
+          </Linkify>
         </div>
       </div>
     </div>
@@ -56,7 +68,7 @@ export const RightMessage = ({
     <div className="flex items-center gap-3 justify-end">
       <div className="bg-neutral-50 w-fit p-3 rounded-xl space-y-1 max-w-[50%]">
         <div className="flex gap-2 items-center justify-self-end">
-          <span className="font-bold">{user.name}</span>
+          <span className="font-bold truncate flex-1">{user.name}</span>
           <span className="text-xs">
             {convertTimeAndDate(message.createdAt)}
           </span>
@@ -68,12 +80,18 @@ export const RightMessage = ({
               <img
                 src={message.image}
                 alt="Message image"
-                className="size-60"
+                className="w-full h-full object-cover"
               />
             </div>
           )}
 
-          <p className="whitespace-pre-wrap">{message.text}</p>
+          <Linkify
+            as={"p"}
+            options={linkifyOptions}
+            className="whitespace-pre-wrap"
+          >
+            {message.text}
+          </Linkify>
         </div>
       </div>
 

@@ -1,10 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useChatStore } from "../../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { Image, Send, Smile, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuthStore } from "../../store/useAuthStore";
+import EmojiPicker from "emoji-picker-react";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 const ChatFormSchema = z.object({
   text: z.string().max(800).trim(),
@@ -14,20 +17,26 @@ const ChatFormSchema = z.object({
 type ChatFormType = z.infer<typeof ChatFormSchema>;
 
 const ChatInput = () => {
-  const { register, handleSubmit, setValue, reset } = useForm<ChatFormType>({
-    resolver: zodResolver(ChatFormSchema),
-    defaultValues: {
-      text: "",
-      image: "",
-    },
-  });
+  const { register, handleSubmit, setValue, getValues, reset } =
+    useForm<ChatFormType>({
+      resolver: zodResolver(ChatFormSchema),
+      defaultValues: {
+        text: "",
+        image: "",
+      },
+    });
 
-  const [inputNumLines, setInputNumLines] = useState(1);
   const [imagePreview, setImagePreview] = useState("");
-  const { selectedUser, sendMessage } = useChatStore();
+  const [showEmojiMenu, setShowEmojiMenu] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const INPUT_MAX_LINES = 3;
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const emojiMenuRef = useRef<HTMLDivElement | null>(null);
 
+  const { authUser } = useAuthStore();
+  const { selectedChat, sendMessage } = useChatStore();
+
+  // -- Handle image inputs
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -57,8 +66,27 @@ const ChatInput = () => {
   const removeImage = () => {
     setImagePreview("");
     setValue("image", "");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
+  // -- Handle emoji inputs
+  useClickOutside({
+    ref: emojiMenuRef,
+    onClose: () => setShowEmojiMenu(false),
+  });
+
+  const handleEmojiClick = (emojiData: { emoji: string }) => {
+    const currentText = getValues("text") || "";
+    setValue("text", currentText + emojiData.emoji, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
+
+  // -- Handle submit
   const onSubmit = async (data: ChatFormType) => {
     const { text, image } = data;
 
@@ -69,30 +97,43 @@ const ChatInput = () => {
       return;
     }
 
+    setSending(true);
+
     try {
       await sendMessage(text, image);
 
       reset();
       setImagePreview("");
-      setInputNumLines(1);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
       console.error("Error sending message", error);
+    } finally {
+      setSending(false);
     }
   };
 
   return (
-    <div className="bg-neutral-50 p-2 rounded-lg ring-1 ring-neutral-50 ring-offset-2 flex flex-col">
+    <div className="bg-neutral-50 p-2 rounded-lg ring-1 ring-neutral-50 ring-offset-2 flex flex-col relative">
       {imagePreview && (
         <div className="mb-4">
           <div className="bg-secondary rounded-lg p-5 w-fit relative">
             <div className="size-40 rounded-lg overflow-hidden">
-              <img src={imagePreview} alt="Preview" />
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             <button
               type="button"
               className="absolute right-2 top-2 p-1 rounded-full bg-red-700 text-white hover:opacity-100 hover:scale-105"
               onClick={removeImage}
+              disabled={sending}
+              aria-disabled={sending}
             >
               <X />
             </button>
@@ -111,45 +152,51 @@ const ChatInput = () => {
           </label>
           <textarea
             id="text"
-            placeholder={`Send a message to ${selectedUser?.name}`}
-            className="border-neutral-200 resize-none"
-            rows={inputNumLines}
+            placeholder={`Send a message to ${
+              selectedChat?.isGroupChat
+                ? selectedChat.chatName
+                : selectedChat?.users.find((u) => u._id !== authUser?._id)?.name
+            }`}
+            className="border-neutral-200 resize-none field-sizing-content wrap-anywhere max-h-30"
+            rows={1}
+            disabled={sending}
+            aria-disabled={sending}
             data-gramm="false"
             data-gramm_editor="false"
             data-enable-grammarly="false"
             onKeyDown={(e) => {
-              // Send new message
               if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
                 handleSubmit(onSubmit)();
               }
-
-              // New line
-              if (
-                e.key === "Enter" &&
-                e.shiftKey &&
-                inputNumLines < INPUT_MAX_LINES
-              ) {
-                setInputNumLines((prev) => prev + 1);
-              }
             }}
-            {...register("text", {
-              onChange: (e) => {
-                const val = e.target.value;
-                setValue("text", val);
-                setInputNumLines(
-                  Math.min(val.split("\n").length, INPUT_MAX_LINES)
-                );
-              },
-            })}
+            {...register("text")}
           />
         </fieldset>
 
         <div className="flex gap-3">
+          <button
+            type="button"
+            aria-label="Emoji picker"
+            className="bg-transparent duration-0"
+            onClick={() => setShowEmojiMenu(!showEmojiMenu)}
+            disabled={sending}
+            aria-disabled={sending}
+            title="Emoji picker"
+          >
+            <Smile />
+          </button>
+
+          {showEmojiMenu && (
+            <div className="absolute bottom-18 right-0" ref={emojiMenuRef}>
+              <EmojiPicker onEmojiClick={handleEmojiClick} />
+            </div>
+          )}
+
           <label
             htmlFor="image-upload"
             className="cursor-pointer hover:opacity-50"
             aria-label="Upload image"
+            title="Upload an image"
           >
             <Image className="w-7 h-7" />
             <input
@@ -157,14 +204,19 @@ const ChatInput = () => {
               id="image-upload"
               accept="image/*"
               className="hidden"
+              ref={fileInputRef}
               onChange={handleImageChange}
+              disabled={sending}
+              aria-disabled={sending}
             />
           </label>
 
           <button
             type="submit"
             aria-label="Send message"
-            className="bg-transparent p-0 duration-0"
+            className="bg-transparent duration-0"
+            disabled={sending}
+            title="Send"
           >
             <Send />
           </button>

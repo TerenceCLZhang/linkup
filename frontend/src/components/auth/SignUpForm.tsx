@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import FormSubmitBtn from "./FormSubmitBtn";
+import FormSubmitBtn from "../ui/FormSubmitBtn";
 
 const signUpFormSchema = z.object({
   name: z.string().trim().min(1, "Full name is required."),
@@ -98,7 +98,7 @@ const SignUpForm = () => {
           />
           <button
             type="button"
-            className="bg-transparent p-0 absolute right-2 top-1/2 -translate-y-1/2"
+            className="bg-transparent absolute right-2 top-1/2 -translate-y-1/2"
             disabled={isLoading}
             aria-disabled={isLoading}
             onClick={() => setShowPassword(!showPassword)}

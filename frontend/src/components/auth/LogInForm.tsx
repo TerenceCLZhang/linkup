@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
-import FormSubmitBtn from "./FormSubmitBtn";
+import FormSubmitBtn from "../ui/FormSubmitBtn";
 
 const logInFormSchema = z.object({
   email: z.email("Invalid email address.").trim().toLowerCase(),
@@ -77,7 +77,7 @@ const LogInForm = () => {
           />
           <button
             type="button"
-            className="bg-transparent p-0 absolute right-2 top-1/2 -translate-y-1/2"
+            className="bg-transparent absolute right-2 top-1/2 -translate-y-1/2"
             onClick={() => setShowPassword(!showPassword)}
             aria-label={showPassword ? "Hide Password" : "Show Password"}
           >

@@ -1,7 +1,7 @@
 import { Mail } from "lucide-react";
 import z from "zod";
 import { useAuthStore } from "../../store/useAuthStore";
-import FormSubmitBtn from "./FormSubmitBtn";
+import FormSubmitBtn from "../ui/FormSubmitBtn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 

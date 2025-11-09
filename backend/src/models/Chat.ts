@@ -10,7 +10,12 @@ const chatSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    image: {
+      type: String,
+    },
+    users: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    ],
     latestMessage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
@@ -22,3 +27,7 @@ const chatSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const Chat = mongoose.model("Chat", chatSchema);
+
+export default Chat;
