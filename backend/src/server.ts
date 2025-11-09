@@ -42,7 +42,7 @@ app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 
 if (ENV.NODE_ENV === "production") {
-  const frontendBuildPath = path.join(__dirname, "../../frontend/dist");
+  const frontendBuildPath = path.join(__dirname, "../../../frontend/dist");
   app.use(express.static(frontendBuildPath));
 
   app.get(/(.*)/, (_req, res) => {
