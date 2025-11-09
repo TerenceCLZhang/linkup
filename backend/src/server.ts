@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import morgan from "morgan";
 import { ENV } from "./config/env.js";
 import { connectDB } from "./config/db.js";
@@ -10,6 +10,9 @@ import { rateLimit } from "express-rate-limit";
 import bodyParser from "body-parser";
 import { app, server } from "./config/socket.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import path from "path";
+
+const __dirname = path.resolve();
 
 app.use(
   cors({
@@ -37,6 +40,14 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
+
+if (ENV.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (_req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
 
 server.listen(ENV.PORT, () => {
   console.log(`Server is listening on port ${ENV.PORT}`);

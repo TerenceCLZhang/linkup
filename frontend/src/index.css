@@ -42,10 +42,6 @@
   p a {
     @apply text-primary hover:opacity-80 hover:underline;
   }
-
-  main {
-    @apply flex items-center justify-center flex-col w-full x-padding flex-1 h-full self-center justify-self-center;
-  }
 }
 
 @layer utility {
