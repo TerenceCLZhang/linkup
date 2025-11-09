@@ -33,7 +33,10 @@ const GroupMembersModal = ({
         <div className="flex flex-col gap-3">
           {selectedChat?.users.map((user, i) => (
             <div key={i} className="flex justify-between items-center">
-              <UserAvatar user={user!} size="md" />
+              <div className="flex gap-2 items-center">
+                <UserAvatar user={user!} size="md" />
+                <span className="font-semibold">{user.name}</span>
+              </div>
 
               {selectedChat.groupAdmin?._id === user._id ? (
                 <span className="font-bold">Group Owner</span>
