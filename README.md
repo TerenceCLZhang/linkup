@@ -1,5 +1,7 @@
 # LinkUp
 
+![linkup message screen](readme-1.png)
+
 LinkUp is a real-time messaging platform built with the MERN stack, offering instant messaging in a clean and modern interface. Users can chat one-on-one or in groups, with full support for media sharing and live presence updates.
 
 ## Features
