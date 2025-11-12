@@ -46,7 +46,7 @@ const Header = () => {
               aria-controls="menu"
               aria-label="Menu with edit profile or logout"
             >
-              <div className="size-13 overflow-hidden rounded-full">
+              <div className="size-12 overflow-hidden rounded-full">
                 <img
                   src={authUser.avatar}
                   alt="Your avatar"
