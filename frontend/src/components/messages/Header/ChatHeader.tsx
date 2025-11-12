@@ -1,7 +1,8 @@
-import { useAuthStore } from "../../store/useAuthStore";
-import { useChatStore } from "../../store/useChatStore";
-import GroupChatHeaderBtns from "./Header/GroupChatHeaderBtns";
-import UserAvatar from "./UserAvatar";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { useChatStore } from "../../../store/useChatStore";
+import GroupChatHeaderBtns from "./GroupChatHeaderBtns";
+import UserAvatar from "../UserAvatar";
+import { X } from "lucide-react";
 
 const ChatHeader = () => {
   const { selectedChat } = useChatStore();
@@ -28,7 +29,7 @@ const OneOnOneChatHeader = () => {
 };
 
 const GroupChatHeader = () => {
-  const { selectedChat } = useChatStore();
+  const { selectedChat, setSelectedChat } = useChatStore();
 
   return (
     <div className="flex justify-between">
@@ -48,7 +49,12 @@ const GroupChatHeader = () => {
         </span>
       </div>
 
-      {selectedChat?.isGroupChat && <GroupChatHeaderBtns />}
+      <div className="flex gap-5">
+        {selectedChat?.isGroupChat && <GroupChatHeaderBtns />}
+        <button title="Close chat" onClick={() => setSelectedChat(null)}>
+          <X />
+        </button>
+      </div>
     </div>
   );
 };

@@ -18,7 +18,7 @@ interface ChatStore {
   isUpdatingGroupChatImage: boolean;
 
   toggleSound: () => void;
-  setSelectedChat: (chat: Chat) => void;
+  setSelectedChat: (chat: Chat | null) => void;
   getChats: () => Promise<void>;
   getMessages: (otherUserId: string) => Promise<void>;
   sendMessage: (text?: string, image?: string) => Promise<void>;
@@ -53,7 +53,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set({ isSoundEnabled: !get().isSoundEnabled });
   },
 
-  setSelectedChat: (selectedChat: Chat) => {
+  setSelectedChat: (selectedChat: Chat | null) => {
     set({ selectedChat });
   },
 

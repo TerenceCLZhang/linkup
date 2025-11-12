@@ -2,7 +2,7 @@ import { MessageSquare } from "lucide-react";
 import { useChatStore } from "../../store/useChatStore";
 import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
-import ChatHeader from "./ChatHeader";
+import ChatHeader from "./Header/ChatHeader";
 import MessageBubble from "./Messages/MessageBubble";
 import ChatContainerSkeleton from "../skeletons/ChatContainerSkeleton";
 
