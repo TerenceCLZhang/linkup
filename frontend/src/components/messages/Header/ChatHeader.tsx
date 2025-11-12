@@ -21,15 +21,19 @@ const OneOnOneChatHeader = () => {
   const otherUser = selectedChat!.users.find((u) => u._id !== authUser!._id);
 
   return (
-    <div className="flex items-center gap-2">
-      <UserAvatar user={otherUser!} size="sm" />
-      <span className="font-semibold">{otherUser?.name}</span>
+    <div className="flex justify-between">
+      <div className="flex items-center gap-2">
+        <UserAvatar user={otherUser!} size="sm" />
+        <span className="font-semibold">{otherUser?.name}</span>
+      </div>
+
+      <CloseChatBtn />
     </div>
   );
 };
 
 const GroupChatHeader = () => {
-  const { selectedChat, setSelectedChat } = useChatStore();
+  const { selectedChat } = useChatStore();
 
   return (
     <div className="flex justify-between">
@@ -51,11 +55,19 @@ const GroupChatHeader = () => {
 
       <div className="flex gap-5">
         {selectedChat?.isGroupChat && <GroupChatHeaderBtns />}
-        <button title="Close chat" onClick={() => setSelectedChat(null)}>
-          <X />
-        </button>
+        <CloseChatBtn />
       </div>
     </div>
+  );
+};
+
+const CloseChatBtn = () => {
+  const { setSelectedChat } = useChatStore();
+
+  return (
+    <button title="Close chat" onClick={() => setSelectedChat(null)}>
+      <X />
+    </button>
   );
 };
 
