@@ -1,4 +1,4 @@
-import SideBar from "../components/messages/SideBar";
+import SideBar from "../components/messages/SideBar/SideBar";
 import MessagesContainer from "../components/messages/MessagesContainer";
 import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";

@@ -7,7 +7,7 @@ import { Image, Send, Smile, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../../store/useAuthStore";
 import EmojiPicker from "emoji-picker-react";
-import { useClickOutside } from "../../hooks/useClickOutside";
+import { useClickOutsideModal } from "../../hooks/useClickOutside";
 
 const ChatFormSchema = z.object({
   text: z.string().max(800).trim(),
@@ -73,7 +73,7 @@ const ChatInput = () => {
   };
 
   // -- Handle emoji inputs
-  useClickOutside({
+  useClickOutsideModal({
     ref: emojiMenuRef,
     onClose: () => setShowEmojiMenu(false),
   });

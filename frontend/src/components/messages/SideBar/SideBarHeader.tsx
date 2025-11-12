@@ -1,31 +1,14 @@
 import { Plus, Users } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import ContactModal from "./Modals/ContactModal";
-import GroupModal from "./Modals/GroupModal";
+import { useRef, useState } from "react";
+import ContactModal from "../Modals/ContactModal";
+import GroupModal from "../Modals/GroupModal";
+import DropDownList from "../../ui/DropDownList";
 
 const SideBarHeader = () => {
-  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showList, setShowList] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showGroupModal, setShowGroupModal] = useState(false);
-  const dialogRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        showAddDialog &&
-        dialogRef.current &&
-        !dialogRef.current.contains(e.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(e.target as Node)
-      ) {
-        setShowAddDialog(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showAddDialog]);
 
   return (
     <div className="border-b-2 border-neutral-200 pb-3 flex justify-between">
@@ -36,33 +19,31 @@ const SideBarHeader = () => {
 
       <div className="relative">
         <button
-          id="show-contact-modal-button"
           type="button"
           className="p-1"
-          onClick={() => setShowAddDialog(!showAddDialog)}
+          onClick={() => setShowList(!showList)}
           ref={buttonRef}
           aria-haspopup="menu"
-          aria-expanded={showAddDialog}
-          aria-controls="add-contact"
+          aria-expanded={showList}
+          aria-controls="menu"
           aria-label="Show menu to add new contacts or create new group chat"
         >
           <Plus />
         </button>
 
-        {showAddDialog && (
-          <div
-            className="absolute z-10 w-59 bg-secondary p-5 right-0 top-full mt-2 shadow-lg border border-neutral-200 flex gap-3 flex-col"
-            ref={dialogRef}
-            id="add-contact"
-            role="menu"
-            aria-labelledby="show-contact-modal-button"
+        {showList && (
+          <DropDownList
+            onClose={() => setShowList(false)}
+            buttonRef={buttonRef}
+            showList={showList}
+            width={59}
           >
             <button
               type="button"
               className="p-1 w-full justify-start"
               onClick={() => {
                 setShowContactModal(true);
-                setShowAddDialog(false);
+                setShowList(false);
               }}
             >
               Add Contact
@@ -72,12 +53,12 @@ const SideBarHeader = () => {
               className="p-1 w-full justify-start"
               onClick={() => {
                 setShowGroupModal(true);
-                setShowAddDialog(false);
+                setShowList(false);
               }}
             >
               Create Group Chat
             </button>
-          </div>
+          </DropDownList>
         )}
       </div>
 

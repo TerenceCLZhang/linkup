@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { X } from "lucide-react";
-import { useClickOutside } from "../../hooks/useClickOutside";
+import { useClickOutsideModal } from "../../hooks/useClickOutside";
 
 const Modal = ({
   children,
@@ -10,7 +10,7 @@ const Modal = ({
   onClose: () => void;
 }) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
-  useClickOutside({ ref: modalRef, onClose: onClose });
+  useClickOutsideModal({ ref: modalRef, onClose: onClose });
 
   return (
     <div className="absolute top-0 left-0 h-screen w-screen z-20">

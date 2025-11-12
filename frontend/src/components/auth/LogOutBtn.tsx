@@ -16,7 +16,7 @@ const LogOutBtn = () => {
   return (
     <button
       type="button"
-      className="button-icon-text button-padding "
+      className="button-icon-text button-padding"
       onClick={handleLogOut}
     >
       <LogOut /> Log Out

@@ -3,7 +3,7 @@ import LandingPage from "./pages/LandingPage";
 import LogInPage from "./pages/auth/LogInPage";
 import SignUpPage from "./pages/auth/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
-import NavBar from "./components/NavBar";
+import Header from "./components/Header";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
@@ -56,7 +56,7 @@ const App = () => {
 
   return (
     <div className="flex items-center flex-col w-full min-h-screen">
-      <NavBar />
+      <Header />
 
       <main className="flex items-center justify-center flex-col w-full x-padding flex-1 container -mt-5">
         <Routes>
