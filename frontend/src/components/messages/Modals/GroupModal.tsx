@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import Modal from "../../ui/Modal";
 import { useChatStore } from "../../../store/useChatStore";
 import FormSubmitBtn from "../../ui/FormSubmitBtn";
+import { MAX_MEMBERS_GROUP_CHAT } from "../../../lib/constants";
 
 const GroupModal = ({
   setShowGroupModal,
@@ -17,8 +18,10 @@ const GroupModal = ({
   const { createGroupChat, isLoading } = useChatStore();
 
   const addEmail = () => {
-    if (emails.length >= 5) {
-      toast.error("Cannot add more than 5 users to a group chat.");
+    if (emails.length >= MAX_MEMBERS_GROUP_CHAT - 1) {
+      toast.error(
+        `Cannot add more than ${MAX_MEMBERS_GROUP_CHAT} users to a group chat.`
+      );
       return;
     }
 
@@ -77,14 +80,18 @@ const GroupModal = ({
                   addEmail();
                 }
               }}
-              disabled={emails.length >= 5 || isLoading}
+              disabled={
+                emails.length >= MAX_MEMBERS_GROUP_CHAT - 1 || isLoading
+              }
               aria-disabled={isLoading}
             />
             <button
               type="button"
               onClick={addEmail}
               className="button-primary button-padding"
-              disabled={emails.length >= 5 || isLoading}
+              disabled={
+                emails.length >= MAX_MEMBERS_GROUP_CHAT - 1 || isLoading
+              }
             >
               Add
             </button>

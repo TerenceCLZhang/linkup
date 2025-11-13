@@ -4,6 +4,8 @@ import User from "../models/User.js";
 import { getSocketId, io } from "../config/socket.js";
 import cloudinary from "../config/cloudinary.js";
 
+const MAX_MEMBERS_GROUP_CHAT = 10;
+
 export const getUserChats = async (req: Request, res: Response) => {
   const userId = req.user!._id;
 
@@ -135,11 +137,11 @@ export const createGroupChat = async (req: Request, res: Response) => {
     });
   }
 
-  // Check if the emails array contains 5 or less users
-  if (emails.length > 6) {
+  // Check if the emails array more than max num
+  if (emails.length >= MAX_MEMBERS_GROUP_CHAT - 1) {
     return res.status(400).json({
       success: false,
-      message: "Group chat cannot have more than 6 people (including creator).",
+      message: `Group chat cannot have more than ${MAX_MEMBERS_GROUP_CHAT} people (including creator).`,
     });
   }
 
@@ -246,11 +248,10 @@ export const updateGroupChat = async (req: Request, res: Response) => {
     // Handle add new users
     if (emails) {
       // Check how many users already in group chat
-      if (emails.length + chat.users.length > 6) {
+      if (emails.length + chat.users.length >= MAX_MEMBERS_GROUP_CHAT - 1) {
         return res.status(400).json({
           success: false,
-          message:
-            "Group chat cannot have more than 6 people (including creator).",
+          message: `Group chat cannot have more than ${MAX_MEMBERS_GROUP_CHAT} people (including creator).`,
         });
       }
 

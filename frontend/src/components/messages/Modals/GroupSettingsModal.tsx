@@ -4,6 +4,7 @@ import { useChatStore } from "../../../store/useChatStore";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import ImageUploaderCircle from "../../ui/ImageUploaderCircle";
+import { MAX_MEMBERS_GROUP_CHAT } from "../../../lib/constants";
 
 const GroupSettingsModal = ({
   setShowGroupSettingsModal,
@@ -22,8 +23,13 @@ const GroupSettingsModal = ({
   const [emails, setEmails] = useState<string[]>([]);
 
   const addEmail = () => {
-    if (emails.length + selectedChat!.users.length >= 6) {
-      toast.error("A group chat cannot contain more than 5 members.");
+    if (
+      emails.length + selectedChat!.users.length >=
+      MAX_MEMBERS_GROUP_CHAT - 1
+    ) {
+      toast.error(
+        `A group chat cannot contain more than ${MAX_MEMBERS_GROUP_CHAT} members.`
+      );
       return;
     }
 
@@ -101,13 +107,19 @@ const GroupSettingsModal = ({
                   addEmail();
                 }
               }}
-              disabled={emails.length + selectedChat!.users.length >= 5}
+              disabled={
+                emails.length + selectedChat!.users.length >=
+                MAX_MEMBERS_GROUP_CHAT
+              }
             />
             <button
               type="button"
               onClick={addEmail}
               className="button-primary button-padding"
-              disabled={emails.length + selectedChat!.users.length >= 5}
+              disabled={
+                emails.length + selectedChat!.users.length >=
+                MAX_MEMBERS_GROUP_CHAT
+              }
             >
               Add
             </button>
