@@ -70,8 +70,7 @@ export const sendMessage = async (req: Request, res: Response) => {
     await newMessage.populate("sender", "-password");
 
     // Update chat's latestMessage
-    chat.latestMessage = newMessage._id;
-    await chat.save();
+    await Chat.findByIdAndUpdate(chat._id, { latestMessage: newMessage._id });
 
     // Real time messaging functionality
     chat.users.forEach((user) => {
