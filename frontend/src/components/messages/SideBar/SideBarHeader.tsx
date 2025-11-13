@@ -40,7 +40,7 @@ const SideBarHeader = () => {
           >
             <button
               type="button"
-              className="p-1 w-full justify-start"
+              className="p-1 w-full"
               onClick={() => {
                 setShowContactModal(true);
                 setShowList(false);
@@ -50,7 +50,7 @@ const SideBarHeader = () => {
             </button>
             <button
               type="button"
-              className="p-1 w-full justify-start"
+              className="p-1 w-full"
               onClick={() => {
                 setShowGroupModal(true);
                 setShowList(false);
