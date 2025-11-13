@@ -17,13 +17,13 @@ const OneOnOneChat = ({ chat }: { chat: Chat }) => {
     <button
       type="button"
       onClick={() => setSelectedChat(chat)}
-      className="bg-transparent hover:bg-secondary p-1 w-full justify-start space-x-2"
+      className="sidebar-chat-btn"
     >
       <UserAvatar user={otherUser!} size="md" />
-      <div className="flex flex-col gap-1 text-left overflow-hidden max-w-50">
-        <span className="font-semibold">{otherUser?.name}</span>
+      <div className="sidebar-chat-info">
+        <span className="sidebar-chat-name">{otherUser?.name}</span>
         {chat.latestMessage && (
-          <span className="text-xs italic truncate">
+          <span className="sidebar-chat-latest-msg">
             {chat.latestMessage.sender.name}: {chat.latestMessage?.text}
           </span>
         )}

@@ -8,7 +8,7 @@ const GroupChat = ({ chat }: { chat: Chat }) => {
     <button
       type="button"
       onClick={() => setSelectedChat(chat)}
-      className="flex items-center gap-2 bg-transparent w-full justify-start hover:bg-secondary p-1"
+      className="sidebar-chat-btn"
     >
       <div className="size-15 shrink-0 relative">
         <div className="overflow-hidden rounded-full bg-neutral-300">
@@ -20,10 +20,10 @@ const GroupChat = ({ chat }: { chat: Chat }) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 text-left overflow-hidden">
-        <span className="font-semibold truncate">{chat.chatName}</span>
+      <div className="sidebar-chat-info">
+        <span className="sidebar-chat-name">{chat.chatName}</span>
         {chat.latestMessage && (
-          <span className="text-xs italic truncate">
+          <span className="sidebar-chat-latest-msg">
             {chat.latestMessage.sender.name}: {chat.latestMessage?.text}
           </span>
         )}

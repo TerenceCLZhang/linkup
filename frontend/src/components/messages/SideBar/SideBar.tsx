@@ -34,7 +34,7 @@ const SideBar = () => {
   ]);
 
   return (
-    <aside className="p-5 flex flex-col gap-5 bg-neutral-50 rounded-lg ">
+    <aside className="p-5 flex flex-col gap-5 bg-neutral-50 rounded-lg lg:w-auto">
       <SideBarHeader />
 
       <div className="w-75 flex-1 min-h-0">

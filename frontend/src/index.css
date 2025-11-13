@@ -107,4 +107,20 @@
   .x-padding {
     @apply px-10 2xl:px-0;
   }
+
+  .sidebar-chat-btn {
+    @apply bg-transparent hover:bg-secondary p-1 w-full justify-start space-x-2;
+  }
+
+  .sidebar-chat-info {
+    @apply flex flex-col gap-1 text-left overflow-hidden max-w-50;
+  }
+
+  .sidebar-chat-name {
+    @apply font-semibold truncate;
+  }
+
+  .sidebar-chat-latest-msg {
+    @apply text-xs italic truncate;
+  }
 }
