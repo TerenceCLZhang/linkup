@@ -12,6 +12,7 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import MessagesPage from "./pages/MessagesPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import { useChatStore } from "./store/useChatStore";
 
 // Routes that require authentication
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -40,10 +41,12 @@ const RedirectAuthenticatedUser = ({
 
 const App = () => {
   const { isCheckingAuth, checkAuth } = useAuthStore();
+  const { initSound } = useChatStore();
 
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+    initSound();
+  }, [checkAuth, initSound]);
 
   if (isCheckingAuth) {
     return (

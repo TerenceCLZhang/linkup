@@ -1,13 +1,15 @@
-import { User } from "lucide-react";
+import { Bell, BellOff, User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import LogOutBtn from "./auth/LogOutBtn";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import DropDownList from "./ui/DropDownList";
+import { useChatStore } from "../store/useChatStore";
+import { motion } from "framer-motion";
 
 const Header = () => {
   const { authUser } = useAuthStore();
+  const { isSoundEnabled, toggleSound } = useChatStore();
 
   const [showList, setShowList] = useState(false);
 
@@ -35,7 +37,16 @@ const Header = () => {
         </h1>
 
         {authUser && (
-          <div className="flex gap-3 relative">
+          <div className="flex gap-5 relative">
+            <button
+              type="button"
+              className="p-0 bg-transparent"
+              title={`${isSoundEnabled ? "Disable" : "Enable"} sound`}
+              onClick={toggleSound}
+            >
+              {isSoundEnabled ? <Bell /> : <BellOff />}
+            </button>
+
             <button
               type="button"
               className="bg-transparent"

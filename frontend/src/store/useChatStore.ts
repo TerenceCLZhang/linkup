@@ -18,6 +18,7 @@ interface ChatStore {
   isUpdatingGroupChatImage: boolean;
 
   toggleSound: () => void;
+  initSound: () => void;
   setSelectedChat: (chat: Chat | null) => void;
   getChats: () => Promise<void>;
   getMessages: (otherUserId: string) => Promise<void>;
@@ -44,13 +45,21 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   selectedChat: null,
   isChatsLoading: false,
   isMessagesLoading: false,
-  isSoundEnabled: true, // Boolean(localStorage.getItem("isSoundEnabled"))
+  isSoundEnabled: Boolean(localStorage.getItem("isSoundEnabled")),
   isLoading: false,
   isUpdatingGroupChatImage: false,
 
   toggleSound: () => {
-    localStorage.setItem("isSoundEnabled", (!get().isSoundEnabled).toString());
-    set({ isSoundEnabled: !get().isSoundEnabled });
+    const newValue = !get().isSoundEnabled;
+    set({ isSoundEnabled: newValue });
+    localStorage.setItem("isSoundEnabled", newValue ? "true" : "false");
+  },
+
+  initSound: () => {
+    const stored = localStorage.getItem("isSoundEnabled");
+    const isSoundEnabled = stored === null ? true : stored === "true";
+    set({ isSoundEnabled });
+    localStorage.setItem("isSoundEnabled", isSoundEnabled ? "true" : "false");
   },
 
   setSelectedChat: (selectedChat: Chat | null) => {
@@ -100,6 +109,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         audio.play().catch((error) => {
           console.error("Error playing sound", error);
         });
+        console.log("Sent");
       }
 
       const updatedChat = {
@@ -289,6 +299,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             audio.play().catch((error) => {
               console.error("Error playing sound", error);
             });
+            console.log("New");
           }
           return;
         }
