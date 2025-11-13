@@ -64,7 +64,7 @@ const Header = () => {
               >
                 <button
                   type="button"
-                  className="button-padding"
+                  className="button-padding p-1"
                   onClick={() => setShowList(false)}
                 >
                   <Link to={"/profile"} className="button-icon-text">
