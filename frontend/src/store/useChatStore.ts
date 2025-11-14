@@ -335,12 +335,21 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         const { selectedChat, messages, isSoundEnabled, chats } = get();
 
         set({
-          chats: [
-            ...chats
-              .filter((chat: Chat) => chat._id === newMessage.chat)
-              .map((chat) => ({ ...chat, latestMessage: newMessage })),
-            ...chats.filter((chat) => chat._id !== newMessage.chat),
-          ],
+          chats: chats
+            .map((chat) =>
+              chat._id === newMessage.chat
+                ? { ...chat, latestMessage: newMessage }
+                : chat
+            )
+            .sort((a, b) => {
+              const aTime = a.latestMessage?.createdAt
+                ? new Date(a.latestMessage.createdAt).getTime()
+                : 0;
+              const bTime = b.latestMessage?.createdAt
+                ? new Date(b.latestMessage.createdAt).getTime()
+                : 0;
+              return bTime - aTime;
+            }),
         });
 
         if (!selectedChat || newMessage.chat !== selectedChat._id) {
