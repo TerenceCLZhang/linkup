@@ -117,7 +117,7 @@
   }
 
   .sidebar-chat-info {
-    @apply flex flex-col gap-1 text-left overflow-hidden max-w-50;
+    @apply flex flex-col gap-1 text-left overflow-hidden max-w-40;
   }
 
   .sidebar-chat-name {
