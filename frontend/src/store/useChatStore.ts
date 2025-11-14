@@ -16,10 +16,11 @@ interface ChatStore {
   isSoundEnabled: boolean;
   isLoading: boolean;
   isUpdatingGroupChatImage: boolean;
+  unreadCounts: Record<string, number>;
 
   toggleSound: () => void;
   initSound: () => void;
-  setSelectedChat: (chat: Chat | null) => void;
+  setSelectedChat: (newSelectedChat: Chat | null) => void;
   getChats: () => Promise<void>;
   getMessages: (otherUserId: string) => Promise<void>;
   sendMessage: (text?: string, image?: string) => Promise<void>;
@@ -48,6 +49,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   isSoundEnabled: Boolean(localStorage.getItem("isSoundEnabled")),
   isLoading: false,
   isUpdatingGroupChatImage: false,
+  unreadCounts: {},
 
   toggleSound: () => {
     const newValue = !get().isSoundEnabled;
@@ -62,8 +64,25 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     localStorage.setItem("isSoundEnabled", isSoundEnabled ? "true" : "false");
   },
 
-  setSelectedChat: (selectedChat: Chat | null) => {
-    set({ selectedChat });
+  setSelectedChat: async (newSelectedChat: Chat | null) => {
+    const { selectedChat } = get();
+
+    const prevChatId = selectedChat?._id;
+    const newChatId = newSelectedChat?._id;
+
+    try {
+      if (prevChatId && prevChatId !== newChatId) {
+        await axiosInstance.patch(`chats/unview-chat/${prevChatId}`);
+      }
+
+      if (newChatId) {
+        await axiosInstance.patch(`/chats/view-chat/${newChatId}`);
+      }
+    } catch (err) {
+      console.error("Error updating chat view state", err);
+    }
+
+    set({ selectedChat: newSelectedChat });
   },
 
   getChats: async () => {
@@ -71,7 +90,17 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     try {
       const res = await axiosInstance.get("/chats");
-      set({ chats: res.data.chats });
+      const chats = res.data.chats;
+
+      const authUser = useAuthStore.getState().authUser;
+
+      const unreadCounts: Record<string, number> = {};
+      chats.forEach((chat: Chat) => {
+        const entry = chat.unread.find((u) => u.user === authUser!._id);
+        unreadCounts[chat._id] = entry?.count ?? 0;
+      });
+
+      set({ chats, unreadCounts });
     } catch (error) {
       storeAPIErrors(error);
     } finally {
@@ -84,6 +113,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     try {
       const res = await axiosInstance.get(`/messages/${id}`);
+
+      set((state) => ({
+        unreadCounts: {
+          ...state.unreadCounts,
+          [id]: 0,
+        },
+      }));
+
       set({ messages: res.data.messages });
     } catch (error) {
       storeAPIErrors(error);
@@ -137,9 +174,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       const res = await axiosInstance.post(`/chats/create`, {
         email: formattedEmail,
       });
+
+      const chat: Chat = res.data.chat;
+
       set({
-        chats: [res.data.chat, ...get().chats],
-        selectedChat: res.data.chat,
+        chats: [chat, ...get().chats],
+        selectedChat: chat,
+        unreadCounts: {
+          ...get().unreadCounts,
+          [chat._id]: 0,
+        },
       });
     } catch (error) {
       storeAPIErrors(error);
@@ -156,9 +200,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         name,
         emails,
       });
+
+      const chat: Chat = res.data.chat;
+
       set({
-        chats: [res.data.chat, ...get().chats],
-        selectedChat: res.data.chat,
+        chats: [chat, ...get().chats],
+        selectedChat: chat,
+        unreadCounts: {
+          ...get().unreadCounts,
+          [chat._id]: 0,
+        },
       });
     } catch (error) {
       storeAPIErrors(error);
@@ -287,7 +338,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         set({
           chats: [
             ...chats
-              .filter((chat) => chat._id === newMessage.chat)
+              .filter((chat: Chat) => chat._id === newMessage.chat)
               .map((chat) => ({ ...chat, latestMessage: newMessage })),
             ...chats.filter((chat) => chat._id !== newMessage.chat),
           ],
@@ -299,8 +350,15 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             audio.play().catch((error) => {
               console.error("Error playing sound", error);
             });
-            console.log("New");
           }
+
+          set((state) => ({
+            unreadCounts: {
+              ...state.unreadCounts,
+              [newMessage.chat]: (state.unreadCounts[newMessage.chat] || 0) + 1,
+            },
+          }));
+
           return;
         }
 

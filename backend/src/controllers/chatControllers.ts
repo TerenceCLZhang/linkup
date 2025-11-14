@@ -96,6 +96,10 @@ export const createChat = async (req: Request, res: Response) => {
     const newChat = await Chat.create({
       isGroupChat: false,
       users: [userId, otherUserId],
+      unread: [userId, otherUserId].map((id) => ({
+        user: id,
+        unread: 0,
+      })),
     });
 
     const chat = await Chat.findById(newChat._id).populate(
@@ -165,6 +169,7 @@ export const createGroupChat = async (req: Request, res: Response) => {
     }
 
     const otherUserIds = foundUsers.map((u) => u._id);
+    const allUserIds = [userId, ...otherUserIds];
 
     // Create a new group chat
     const newChat = await Chat.create({
@@ -172,6 +177,10 @@ export const createGroupChat = async (req: Request, res: Response) => {
       isGroupChat: true,
       users: [userId, ...otherUserIds],
       groupAdmin: userId,
+      unread: allUserIds.map((id) => ({
+        user: id,
+        count: 0,
+      })),
     });
 
     const chat = await Chat.findById(newChat._id)
@@ -285,7 +294,10 @@ export const updateGroupChat = async (req: Request, res: Response) => {
         });
       }
 
-      chat.users = [...chat.users, ...newUserIds];
+      newUserIds.forEach((id) => {
+        chat.users.push(id);
+        chat.unread.push({ user: id, count: 0 });
+      });
     }
 
     await chat.save();
@@ -381,6 +393,7 @@ export const removeGroupChatUser = async (req: Request, res: Response) => {
 
     // Remove the user from the group
     chat.users = chat.users.filter((u) => !u.equals(userToRemove._id));
+    chat.unread.pull({ user: userId });
 
     await chat.save();
 
@@ -484,6 +497,58 @@ export const updateGroupChatImage = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error with updating avatar", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const viewChat = async (req: Request, res: Response) => {
+  const userId = req.user!._id;
+  const { chatId } = req.params;
+
+  try {
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Chat not found." });
+    }
+
+    if (chat.activeUsers.includes(userId)) {
+      return res
+        .status(409)
+        .json({ success: false, message: "User already active in this chat." });
+    }
+
+    chat.activeUsers = [...chat.activeUsers, userId];
+
+    await chat.save();
+
+    return res.json({ success: true, message: "User now viewing chat." });
+  } catch (error) {
+    console.error("Error setting user to view chat", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const unViewChat = async (req: Request, res: Response) => {
+  const userId = req.user!._id;
+  const { chatId } = req.params;
+
+  try {
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Chat not found." });
+    }
+
+    chat.activeUsers = chat.activeUsers.filter((id) => !id.equals(userId));
+
+    await chat.save();
+
+    return res.json({ success: true, message: "User now not viewing chat." });
+  } catch (error) {
+    console.error("Error setting user to unview chat", error);
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };

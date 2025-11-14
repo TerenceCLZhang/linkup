@@ -6,6 +6,7 @@ import Chat from "../models/Chat.js";
 
 export const getMessages = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const userId = req.user!._id;
 
   // Check if other chat ID is provided
   if (!id) {
@@ -15,9 +16,30 @@ export const getMessages = async (req: Request, res: Response) => {
   }
 
   try {
+    const chat = await Chat.findById(id);
+
+    if (!chat) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Chat not found." });
+    }
+
+    if (!chat.users.some((user) => user.equals(userId))) {
+      return res.status(401).json({ success: false, message: "Unauthorized." });
+    }
+
     const messages = await Message.find({ chat: id })
       .populate("sender", "-password")
       .sort({ createdAt: 1 });
+
+    let entry = chat.unread.find((pair) => pair.user?.equals(userId));
+    if (entry) {
+      entry.count = 0;
+    } else {
+      chat.unread.push({ user: userId, count: 0 });
+    }
+
+    await chat.save();
 
     return res.json({ success: true, message: "Messages found.", messages });
   } catch (error) {
@@ -38,13 +60,18 @@ export const sendMessage = async (req: Request, res: Response) => {
   }
 
   try {
-    const userId = req.user?._id;
+    const userId = req.user!._id;
 
     const chat = await Chat.findById(chatId).populate("users", "_id");
+
     if (!chat) {
       return res
         .status(404)
         .json({ success: false, message: "Chat not found." });
+    }
+
+    if (!chat.users.some((user) => user.equals(userId))) {
+      return res.status(401).json({ success: false, message: "Unauthorized." });
     }
 
     let imageUrl;
@@ -70,7 +97,22 @@ export const sendMessage = async (req: Request, res: Response) => {
     await newMessage.populate("sender", "-password");
 
     // Update chat's latestMessage
-    await Chat.findByIdAndUpdate(chat._id, { latestMessage: newMessage._id });
+    chat.latestMessage = newMessage._id;
+    chat.users.forEach((user) => {
+      if (user._id.equals(userId) || chat.activeUsers.includes(user._id))
+        return;
+
+      let entry = chat.unread.find(
+        (pair) => pair.user && pair.user.equals(user._id)
+      );
+      if (entry) {
+        entry.count += 1;
+      } else {
+        chat.unread.push({ user: user._id, count: 1 });
+      }
+    });
+
+    await chat.save();
 
     // Real time messaging functionality
     chat.users.forEach((user) => {

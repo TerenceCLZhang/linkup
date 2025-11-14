@@ -2,6 +2,7 @@ import SideBar from "../components/messages/SideBar/SideBar";
 import MessagesContainer from "../components/messages/MessagesContainer";
 import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
+import { axiosInstance } from "../lib/axios";
 
 const MessagesPage = () => {
   const {
@@ -9,6 +10,7 @@ const MessagesPage = () => {
     unListenToUpdatedChat,
     listenToMessages,
     unListenToMessages,
+    selectedChat,
   } = useChatStore();
 
   useEffect(() => {
@@ -18,10 +20,15 @@ const MessagesPage = () => {
     return () => {
       unListenToUpdatedChat();
       unListenToMessages();
+
+      if (selectedChat) {
+        axiosInstance.patch(`/chats/unview-chat/${selectedChat._id}`);
+      }
     };
   }, [
     listenToMessages,
     listenToUpdatedChat,
+    selectedChat,
     unListenToMessages,
     unListenToUpdatedChat,
   ]);

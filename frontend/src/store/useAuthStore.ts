@@ -4,6 +4,7 @@ import type { User } from "../types/User";
 import toast from "react-hot-toast";
 import { storeAPIErrors } from "../lib/storeAPIErrors";
 import { io, Socket } from "socket.io-client";
+import { useChatStore } from "./useChatStore";
 
 interface AuthStore {
   authUser: User | null;
@@ -104,6 +105,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     set({ isLoading: true });
 
     try {
+      const { selectedChat, setSelectedChat } = useChatStore.getState();
+      // If the user had a chat open, unview it before logging out
+      if (selectedChat?._id) {
+        await axiosInstance.patch(`/chats/unview-chat/${selectedChat._id}`);
+        setSelectedChat(null);
+      }
+
       await axiosInstance.post("/auth/logout");
 
       get().disconnectSocket();

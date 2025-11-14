@@ -3,6 +3,7 @@ import { useAuthStore } from "../../../store/useAuthStore";
 import { useChatStore } from "../../../store/useChatStore";
 import type { Chat } from "../../../types/Chat";
 import UserAvatar from "../UserAvatar";
+import UnreadCount from "./UnreadCount";
 
 const OneOnOneChat = ({ chat }: { chat: Chat }) => {
   const { authUser } = useAuthStore();
@@ -19,15 +20,19 @@ const OneOnOneChat = ({ chat }: { chat: Chat }) => {
       onClick={() => setSelectedChat(chat)}
       className="sidebar-chat-btn"
     >
-      <UserAvatar user={otherUser!} size="md" />
-      <div className="sidebar-chat-info">
-        <span className="sidebar-chat-name">{otherUser?.name}</span>
-        {chat.latestMessage && (
-          <span className="sidebar-chat-latest-msg">
-            {chat.latestMessage.sender.name}: {chat.latestMessage?.text}
-          </span>
-        )}
+      <div className="sidebar-main ">
+        <UserAvatar user={otherUser!} size="md" />
+        <div className="sidebar-chat-info">
+          <span className="sidebar-chat-name">{otherUser?.name}</span>
+          {chat.latestMessage && (
+            <span className="sidebar-chat-latest-msg">
+              {chat.latestMessage.sender.name}: {chat.latestMessage?.text}
+            </span>
+          )}
+        </div>
       </div>
+
+      <UnreadCount chat={chat} />
     </button>
   );
 };

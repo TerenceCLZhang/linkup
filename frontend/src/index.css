@@ -109,7 +109,11 @@
   }
 
   .sidebar-chat-btn {
-    @apply bg-transparent hover:bg-secondary p-1 w-full justify-start space-x-2;
+    @apply bg-transparent hover:bg-secondary p-1 w-full justify-between space-x-2;
+  }
+
+  .sidebar-main {
+    @apply flex gap-2 items-center justify-center;
   }
 
   .sidebar-chat-info {

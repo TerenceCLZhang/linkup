@@ -24,6 +24,13 @@ const chatSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    unread: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId },
+        count: { type: Number, default: 0 },
+      },
+    ],
+    activeUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

@@ -46,6 +46,21 @@ const App = () => {
   useEffect(() => {
     checkAuth();
     initSound();
+
+    const handleUnload = () => {
+      const chat = useChatStore.getState().selectedChat;
+
+      if (chat) {
+        navigator.sendBeacon(
+          `${import.meta.env.VITE_BACKEND_URL}/api/chats/unview-chat/${
+            chat._id
+          }`
+        );
+      }
+    };
+
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
   }, [checkAuth, initSound]);
 
   if (isCheckingAuth) {
