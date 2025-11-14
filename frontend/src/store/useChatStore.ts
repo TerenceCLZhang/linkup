@@ -146,7 +146,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         audio.play().catch((error) => {
           console.error("Error playing sound", error);
         });
-        console.log("Sent");
       }
 
       const updatedChat = {
@@ -433,8 +432,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       socket.on("removeChat", (data: { chatId: string }) => {
         const { chatId } = data;
         const { chats } = get();
-
-        console.log(chatId);
 
         set({
           chats: chats.filter((c) => c._id !== chatId),

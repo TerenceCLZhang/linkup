@@ -304,7 +304,14 @@ export const updateGroupChat = async (req: Request, res: Response) => {
 
     const updatedChat = await Chat.findById(chatId)
       .populate("groupAdmin", "-password")
-      .populate("users", "-password");
+      .populate("users", "-password")
+      .populate({
+        path: "latestMessage",
+        populate: {
+          path: "sender",
+          select: "-password",
+        },
+      });
 
     // Send web socket event
     chat.users.forEach((user) => {
@@ -399,7 +406,14 @@ export const removeGroupChatUser = async (req: Request, res: Response) => {
 
     const updatedChat = await Chat.findById(chatId)
       .populate("groupAdmin", "-password")
-      .populate("users", "-password");
+      .populate("users", "-password")
+      .populate({
+        path: "latestMessage",
+        populate: {
+          path: "sender",
+          select: "-password",
+        },
+      });
 
     // Send web socket event to update chat
     chat.users.forEach((user) => {
@@ -478,7 +492,14 @@ export const updateGroupChatImage = async (req: Request, res: Response) => {
 
     const updatedChat = await Chat.findById(chatId)
       .populate("groupAdmin", "-password")
-      .populate("users", "-password");
+      .populate("users", "-password")
+      .populate({
+        path: "latestMessage",
+        populate: {
+          path: "sender",
+          select: "-password",
+        },
+      });
 
     // Send web socket event to update chat
     chat.users.forEach((user) => {
