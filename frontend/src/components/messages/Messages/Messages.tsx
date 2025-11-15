@@ -2,6 +2,7 @@ import type { User } from "../../../types/User";
 import { convertTimeAndDate } from "../../../lib/convertDate";
 import type { Message } from "../../../types/Message";
 import Linkify from "linkify-react";
+import MessageImage from "./MessageImage";
 
 const linkifyOptions = {
   target: "_blank",
@@ -34,15 +35,7 @@ export const LeftMessage = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          {message.image && (
-            <div className="mx-auto rounded-lg overflow-hidden">
-              <img
-                src={message.image}
-                alt="Message image"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
+          {message.image && <MessageImage image={message.image} />}
 
           <Linkify
             as={"p"}
@@ -75,15 +68,7 @@ export const RightMessage = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          {message.image && (
-            <div className="mx-auto rounded-lg overflow-hidden">
-              <img
-                src={message.image}
-                alt="Message image"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
+          {message.image && <MessageImage image={message.image} />}
 
           <Linkify
             as={"p"}

@@ -45,3 +45,28 @@ export const useClickOutsideList = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [buttonRef, onClose, ref, showList]);
 };
+
+export const useClickOutsideImageModal = ({
+  imageRef,
+  buttonsRef,
+  onClose,
+}: {
+  imageRef: React.RefObject<HTMLDivElement | null>;
+  buttonsRef: React.RefObject<HTMLDivElement | null>;
+  onClose: () => void;
+}) => {
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        imageRef.current &&
+        !imageRef.current.contains(e.target as Node) &&
+        buttonsRef.current &&
+        !buttonsRef.current.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [buttonsRef, imageRef, onClose]);
+};

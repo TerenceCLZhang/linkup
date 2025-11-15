@@ -127,4 +127,12 @@
   .sidebar-chat-latest-msg {
     @apply text-xs italic truncate;
   }
+
+  .message-img-btn {
+    @apply bg-primary text-secondary p-1;
+  }
+
+  .message-img-btn svg {
+    @apply size-7;
+  }
 }
