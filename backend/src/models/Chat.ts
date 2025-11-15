@@ -1,4 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
+import { IMessage } from "./Message.js";
+
+interface IUnread {
+  user: Types.ObjectId;
+  count: number;
+}
+
+export interface IChat extends Document {
+  _id: Types.ObjectId;
+  chatName: string;
+  isGroupChat: boolean;
+  image: string;
+  users: Types.ObjectId[];
+  latestMessage: Types.ObjectId | IMessage;
+  groupAdmin: Types.ObjectId;
+  unread: Types.DocumentArray<IUnread>;
+  activeUsers: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const chatSchema = new mongoose.Schema(
   {
@@ -35,6 +55,6 @@ const chatSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Chat = mongoose.model("Chat", chatSchema);
+const Chat = mongoose.model<IChat>("Chat", chatSchema);
 
 export default Chat;

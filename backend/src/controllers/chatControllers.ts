@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import Chat from "../models/Chat.js";
+import Chat, { IChat } from "../models/Chat.js";
 import User from "../models/User.js";
 import { getSocketId, io } from "../config/socket.js";
 import cloudinary from "../config/cloudinary.js";
+import { IMessage } from "../models/Message.js";
 
 const MAX_MEMBERS_GROUP_CHAT = 10;
 
@@ -21,8 +22,17 @@ export const getUserChats = async (req: Request, res: Response) => {
           path: "sender",
           select: "-password",
         },
-      })
-      .sort({ updatedAt: -1 }); // get latest first
+      });
+
+    // Sort by time of latest post
+    chats.sort((a: IChat, b: IChat) => {
+      const aMsg = a.latestMessage as IMessage;
+      const bMsg = b.latestMessage as IMessage;
+
+      if (!aMsg || !bMsg) return 0;
+
+      return bMsg.createdAt.getTime() - aMsg.createdAt.getTime();
+    });
 
     return res.json({
       success: true,
