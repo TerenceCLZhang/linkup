@@ -173,7 +173,11 @@ export const logIn = async (req: Request, res: Response) => {
 };
 
 export const logOut = async (_req: Request, res: Response) => {
-  res.clearCookie("linkup-token");
+  res.clearCookie("linkup-token", {
+    httpOnly: true,
+    secure: ENV.NODE_ENV === "production",
+    sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
+  });
   res.json({ success: true, message: "Logged out successfully." });
 };
 

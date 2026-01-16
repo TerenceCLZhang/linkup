@@ -1,13 +1,15 @@
 import { LogOut } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const LogOutBtn = () => {
   const { logOut } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleLogOut = async () => {
     try {
       await logOut();
-      window.location.href = "/login";
+      navigate("/login");
     } catch (error) {
       console.error("Error logging out", error);
     }
