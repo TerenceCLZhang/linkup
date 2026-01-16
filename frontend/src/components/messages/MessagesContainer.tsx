@@ -66,7 +66,7 @@ const MessagesContainer = () => {
   return (
     <div className="flex-1 flex flex-col gap-5 p-5">
       <ChatHeader />
-      <div className="flex-1 flex flex-col gap-3 overflow-y-auto px-5 scrollbar">
+      <div className="flex-1 flex flex-col gap-3 overflow-y-auto px-2 md:px-5 scrollbar">
         {messages.map((message, i) => {
           const prevMessage = messages[i - 1];
           const showDateSeparator =
