@@ -34,9 +34,17 @@ const MessagesPage = () => {
   ]);
 
   return (
-    <div className="bg-secondary container flex justify-between rounded-lg h-[75vh] max-h-5xl w-full overflow-hidden">
-      <SideBar />
-      <MessagesContainer />
+    <div className="bg-secondary container flex justify-between rounded-lg h-[80vh] md:h-[75vh] max-h-5xl w-full overflow-hidden relative">
+      <div
+        className={`w-full lg:w-auto ${
+          selectedChat ? "hidden lg:block" : "block"
+        }`}
+      >
+        <SideBar />
+      </div>
+      <div className={`flex-1 ${!selectedChat ? "hidden lg:flex" : "flex"}`}>
+        <MessagesContainer />
+      </div>
     </div>
   );
 };

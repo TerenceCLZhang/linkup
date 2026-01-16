@@ -23,14 +23,14 @@ const Header = () => {
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
       <div className="flex items-center justify-between py-5">
-        <h1 className="text-2xl font-bold h-15 p-1">
+        <h1 className="text-xl md:text-2xl font-bold h-12 md:h-15 p-1">
           <a href="/" className="flex items-center h-full gap-2">
             <img
               src="/logo.svg"
               alt="Logo"
               className="h-full w-auto object-contain"
             />
-            <h1>
+            <h1 className="hidden sm:block">
               Link<span className="text-primary">Up</span>
             </h1>
           </a>

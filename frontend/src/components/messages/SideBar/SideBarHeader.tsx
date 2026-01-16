@@ -36,7 +36,7 @@ const SideBarHeader = () => {
             onClose={() => setShowList(false)}
             buttonRef={buttonRef}
             showList={showList}
-            width={59}
+            width={75}
           >
             <button
               type="button"

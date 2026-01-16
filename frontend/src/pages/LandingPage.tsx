@@ -11,13 +11,17 @@ const LandingPageExtended = () => {
       transition={{ duration: 0.8, ease: "easeInOut" }}
     >
       {/* Hero Section */}
-      <section className="mt-20 max-w-3xl flex flex-col items-center gap-10 justify-center mx-auto relative">
-        <img src="/hero.png" alt="" className="-mt-20 -mb-10 w-100" />
+      <section className="mt-10 md:mt-20 max-w-3xl flex flex-col items-center gap-6 md:gap-10 justify-center mx-auto relative">
+        <img
+          src="/hero.png"
+          alt=""
+          className="-mt-10 md:-mt-20 -mb-5 md:-mb-10 w-64 md:w-100"
+        />
 
-        <h1 className="text-7xl font-extrabold">
+        <h1 className="text-5xl md:text-7xl font-extrabold">
           Link<span className="text-primary">Up</span>
         </h1>
-        <p className="text-2xl">
+        <p className="text-xl md:text-2xl">
           Connect <span className="font-bold italic">instantly</span>. Chat
           <span className="font-bold italic"> seamlessly</span>. Share
           <span className="font-bold italic"> effortlessly</span>.
@@ -33,11 +37,11 @@ const LandingPageExtended = () => {
       </section>
 
       {/* Features Section */}
-      <section className="flex flex-col gap-10 max-w-5xl">
-        <h2 className="text-4xl">Features</h2>
+      <section className="flex flex-col gap-10 max-w-5xl w-full">
+        <h2 className="text-3xl md:text-4xl text-center">Features</h2>
 
         <motion.div
-          className="flex gap-5 justify-between h-100"
+          className="flex flex-col lg:flex-row gap-5 justify-between lg:h-100"
           initial="hidden"
           viewport={{ once: true }}
           whileInView="visible"
@@ -53,7 +57,7 @@ const LandingPageExtended = () => {
           {FeatureCardsData.map((card, i) => (
             <motion.div
               key={i}
-              className="landing-card"
+              className="landing-card w-full"
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0 },
@@ -61,7 +65,9 @@ const LandingPageExtended = () => {
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
               <span>{card.emoji}</span>
-              <h3>{card.title}</h3>
+              <h3 className="text-2xl md:text-3xl font-semibold">
+                {card.title}
+              </h3>
               <p>{card.desc}</p>
             </motion.div>
           ))}
