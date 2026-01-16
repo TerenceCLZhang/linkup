@@ -5,6 +5,7 @@ import ChatInput from "./ChatInput";
 import ChatHeader from "./Header/ChatHeader";
 import MessageBubble from "./Messages/MessageBubble";
 import ChatContainerSkeleton from "../skeletons/ChatContainerSkeleton";
+import DateSeparator from "./Messages/DateSeparator";
 
 const MessagesContainer = () => {
   const { messages, getMessages, isMessagesLoading, selectedChat } =
@@ -66,9 +67,20 @@ const MessagesContainer = () => {
     <div className="flex-1 flex flex-col gap-5 p-5">
       <ChatHeader />
       <div className="flex-1 flex flex-col gap-3 overflow-y-auto px-5 scrollbar">
-        {messages.map((message, i) => (
-          <MessageBubble key={i} message={message} />
-        ))}
+        {messages.map((message, i) => {
+          const prevMessage = messages[i - 1];
+          const showDateSeparator =
+            !prevMessage ||
+            new Date(message.createdAt).toDateString() !==
+              new Date(prevMessage.createdAt).toDateString();
+
+          return (
+            <div key={i}>
+              {showDateSeparator && <DateSeparator date={message.createdAt} />}
+              <MessageBubble message={message} />
+            </div>
+          );
+        })}
         <div ref={bottomRef} />
       </div>
       <ChatInput />

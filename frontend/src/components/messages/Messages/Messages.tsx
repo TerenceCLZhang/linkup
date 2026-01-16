@@ -1,5 +1,5 @@
 import type { User } from "../../../types/User";
-import { convertTimeAndDate } from "../../../lib/convertDate";
+import { convertOnlyTime } from "../../../lib/convertDate";
 import type { Message } from "../../../types/Message";
 import Linkify from "linkify-react";
 import MessageImage from "./MessageImage";
@@ -29,9 +29,7 @@ export const LeftMessage = ({
       <div className="bg-neutral-50 w-fit p-3 rounded-xl max-w-[50%]">
         <div className="flex gap-2 items-center">
           <span className="font-bold truncate flex-1">{user.name}</span>
-          <span className="text-xs">
-            {convertTimeAndDate(message.createdAt)}
-          </span>
+          <span className="text-xs">{convertOnlyTime(message.createdAt)}</span>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -62,9 +60,7 @@ export const RightMessage = ({
       <div className="bg-neutral-50 w-fit p-3 rounded-xl space-y-1 max-w-[50%]">
         <div className="flex gap-2 items-center justify-self-end">
           <span className="font-bold truncate flex-1">{user.name}</span>
-          <span className="text-xs">
-            {convertTimeAndDate(message.createdAt)}
-          </span>
+          <span className="text-xs">{convertOnlyTime(message.createdAt)}</span>
         </div>
 
         <div className="flex flex-col gap-2">
