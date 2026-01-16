@@ -70,7 +70,7 @@ const GroupSettingsModal = ({
 
   return (
     <Modal onClose={() => setShowGroupSettingsModal(false)}>
-      <h2 className="text-3xl mb-5">Edit Group Chat</h2>
+      <h2 className="text-2xl md:text-3xl mb-5 font-bold">Edit Group Chat</h2>
 
       <div className="border-b border-neutral-300 pb-5">
         <ImageUploaderCircle

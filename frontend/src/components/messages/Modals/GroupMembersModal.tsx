@@ -27,7 +27,7 @@ const GroupMembersModal = ({
 
   return (
     <Modal onClose={() => setShowUserModal(false)}>
-      <h2 className="text-3xl mb-5">Members</h2>
+      <h2 className="text-2xl md:text-3xl mb-5 font-bold">Members</h2>
 
       {!toRemoveUser ? (
         <div className="flex flex-col gap-3">
@@ -39,7 +39,7 @@ const GroupMembersModal = ({
               </div>
 
               {selectedChat.groupAdmin?._id === user._id ? (
-                <span className="font-bold">Group Owner</span>
+                <span className="font-bold">Owner</span>
               ) : (
                 (selectedChat.groupAdmin?._id === authUser?._id ||
                   authUser?._id === user._id) && (

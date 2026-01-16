@@ -12,7 +12,7 @@ const GroupChatHeaderBtns = () => {
   const [showGroupSettingsModal, setShowGroupSettingsModal] = useState(false);
 
   return (
-    <div className="flex gap-5">
+    <div className="flex gap-2 md:gap-5">
       <button
         type="button"
         onClick={() => setShowUserModal(true)}

@@ -177,7 +177,7 @@ const ChatInput = () => {
           <button
             type="button"
             aria-label="Emoji picker"
-            className="bg-transparent duration-0"
+            className="bg-transparent duration-0 hidden md:block"
             onClick={() => setShowEmojiMenu(!showEmojiMenu)}
             disabled={sending}
             aria-disabled={sending}
@@ -214,7 +214,7 @@ const ChatInput = () => {
           <button
             type="submit"
             aria-label="Send message"
-            className="bg-transparent duration-0"
+            className="bg-transparent duration-0 hidden md:block"
             disabled={sending}
             title="Send"
           >
