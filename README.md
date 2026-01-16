@@ -4,6 +4,8 @@
 
 LinkUp is a real-time messaging platform built with the MERN stack, offering instant messaging in a clean and modern interface. Users can chat one-on-one or in groups, with full support for media sharing and live presence updates.
 
+*Note: The website may take up to 50 seconds to load.*
+
 ## Features
 
 - Secure authentication with JSON Web Tokens (JWT)
