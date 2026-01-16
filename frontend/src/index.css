@@ -23,7 +23,7 @@
   }
 
   form {
-    @apply max-w-xl flex flex-col items-center gap-5 w-full;
+    @apply max-w-xl md:max-w-2xl flex flex-col items-center gap-5 w-full;
   }
 
   fieldset {
