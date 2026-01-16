@@ -172,7 +172,7 @@ export const logIn = async (req: Request, res: Response) => {
   }
 };
 
-export const logOut = async (req: Request, res: Response) => {
+export const logOut = async (_req: Request, res: Response) => {
   res.clearCookie("linkup-token");
   res.json({ success: true, message: "Logged out successfully." });
 };
