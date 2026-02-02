@@ -3,6 +3,8 @@ import { useChatStore } from "../../../store/useChatStore";
 import GroupChatHeaderBtns from "./GroupChatHeaderBtns";
 import UserAvatar from "../UserAvatar";
 import { ArrowLeft, Trash2, X } from "lucide-react";
+import { useState } from "react";
+import ConfirmModal from "../../ui/ConfirmModal";
 
 const ChatHeader = () => {
   const { selectedChat } = useChatStore();
@@ -44,26 +46,33 @@ const OneOnOneChatHeader = () => {
 
 const DeleteChatBtn = () => {
   const { selectedChat, deleteChat } = useChatStore();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleDelete = async () => {
     if (!selectedChat) return;
-    if (
-      window.confirm(
-        "Are you sure you want to remove this chat from your view? You can restore it later by re-adding the user.",
-      )
-    ) {
-      await deleteChat(selectedChat._id);
-    }
+    await deleteChat(selectedChat._id);
   };
 
   return (
-    <button
-      title="Remove chat"
-      onClick={handleDelete}
-      className="text-red-500 hover:text-red-700 transition-colors"
-    >
-      <Trash2 className="size-5" />
-    </button>
+    <>
+      <button
+        title="Remove chat"
+        onClick={() => setShowConfirmModal(true)}
+        className="text-red-500 hover:text-red-700 transition-colors"
+      >
+        <Trash2 className="size-5" />
+      </button>
+
+      {showConfirmModal && (
+        <ConfirmModal
+          title="Remove Chat"
+          message="Are you sure you want to remove this chat from your view? You can restore it later by re-adding the user."
+          confirmText="Remove"
+          onConfirm={handleDelete}
+          onClose={() => setShowConfirmModal(false)}
+        />
+      )}
+    </>
   );
 };
 

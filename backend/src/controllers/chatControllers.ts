@@ -626,13 +626,42 @@ export const deleteChat = async (req: Request, res: Response) => {
       });
     }
 
-    // Soft delete: add user to deletedBy array
+    // --- Scenario 1: Group Chat (Permanent Delete by Admin) ---
+    if (chat.isGroupChat) {
+      if (!chat.groupAdmin?.equals(userId)) {
+        return res.status(403).json({
+          success: false,
+          message: "Only the group admin can delete the entire group chat.",
+        });
+      }
+
+      // 1. Delete all messages
+      await Message.deleteMany({ chat: chatId });
+
+      // 2. Delete the chat itself
+      await Chat.findByIdAndDelete(chatId);
+
+      // 3. Emit socket event to ALL members
+      chat.users.forEach((user) => {
+        const socketId = getSocketId(user.toString());
+        if (socketId) {
+          io.to(socketId).emit("removeChat", { chatId });
+        }
+      });
+
+      return res.json({
+        success: true,
+        message: "Group chat and all messages permanently deleted.",
+      });
+    }
+
+    // --- Scenario 2: One-on-One Chat (Soft Delete/Hide) ---
     if (!chat.deletedBy.includes(userId)) {
       chat.deletedBy.push(userId);
       await chat.save();
     }
 
-    // Emit socket event only to the user who deleted it
+    // Emit socket event only to the user who hidden it
     const socketId = getSocketId(userId.toString());
     if (socketId) {
       io.to(socketId).emit("removeChat", { chatId });
