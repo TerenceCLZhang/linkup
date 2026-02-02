@@ -16,4 +16,6 @@ export interface Chat {
   groupAdmin?: User | null | undefined;
   unread: IUnread[];
   activeUsers: string[];
+  createdAt: string;
+  updatedAt: string;
 }

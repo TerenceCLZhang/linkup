@@ -367,10 +367,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             .sort((a, b) => {
               const aTime = a.latestMessage?.createdAt
                 ? new Date(a.latestMessage.createdAt).getTime()
-                : 0;
+                : new Date(a.updatedAt).getTime();
               const bTime = b.latestMessage?.createdAt
                 ? new Date(b.latestMessage.createdAt).getTime()
-                : 0;
+                : new Date(b.updatedAt).getTime();
               return bTime - aTime;
             }),
         });

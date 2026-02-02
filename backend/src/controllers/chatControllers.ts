@@ -25,14 +25,16 @@ export const getUserChats = async (req: Request, res: Response) => {
         },
       });
 
-    // Sort by time of latest post
+    // Sort by time of latest activity (post or update)
     chats.sort((a: IChat, b: IChat) => {
-      const aMsg = a.latestMessage as IMessage;
-      const bMsg = b.latestMessage as IMessage;
+      const aTime = a.latestMessage
+        ? new Date((a.latestMessage as IMessage).createdAt).getTime()
+        : new Date(a.updatedAt).getTime();
+      const bTime = b.latestMessage
+        ? new Date((b.latestMessage as IMessage).createdAt).getTime()
+        : new Date(b.updatedAt).getTime();
 
-      if (!aMsg || !bMsg) return 0;
-
-      return bMsg.createdAt.getTime() - aMsg.createdAt.getTime();
+      return bTime - aTime;
     });
 
     return res.json({
