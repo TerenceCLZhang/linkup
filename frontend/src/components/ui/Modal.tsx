@@ -13,16 +13,23 @@ const Modal = ({
   useClickOutsideModal({ ref: modalRef, onClose: onClose });
 
   return (
-    <div className="absolute top-0 left-0 h-screen w-screen z-20">
-      <div className="bg-black/50 w-full h-full" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-secondary p-5 w-150 rounded-lg shadow-lg flex flex-col items-center gap-3"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div
+        className="relative z-10 bg-secondary p-6 w-full max-w-lg rounded-xl shadow-2xl flex flex-col items-center gap-4"
         ref={modalRef}
       >
-        <button type="button" onClick={onClose} className="self-end">
-          <X />
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-700 transition-colors"
+        >
+          <X className="size-5" />
         </button>
-        <div className="w-full">{children}</div>
+        <div className="w-full pt-2">{children}</div>
       </div>
     </div>
   );
