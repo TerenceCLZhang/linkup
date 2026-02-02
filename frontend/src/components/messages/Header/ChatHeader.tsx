@@ -2,7 +2,7 @@ import { useAuthStore } from "../../../store/useAuthStore";
 import { useChatStore } from "../../../store/useChatStore";
 import GroupChatHeaderBtns from "./GroupChatHeaderBtns";
 import UserAvatar from "../UserAvatar";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, Trash2, X } from "lucide-react";
 
 const ChatHeader = () => {
   const { selectedChat } = useChatStore();
@@ -34,8 +34,36 @@ const OneOnOneChatHeader = () => {
         <span className="font-semibold">{otherUser?.name}</span>
       </div>
 
-      <CloseChatBtn />
+      <div className="flex gap-2 sm:gap-5">
+        <DeleteChatBtn />
+        <CloseChatBtn />
+      </div>
     </div>
+  );
+};
+
+const DeleteChatBtn = () => {
+  const { selectedChat, deleteChat } = useChatStore();
+
+  const handleDelete = async () => {
+    if (!selectedChat) return;
+    if (
+      window.confirm(
+        "Are you sure you want to remove this chat from your view? You can restore it later by re-adding the user.",
+      )
+    ) {
+      await deleteChat(selectedChat._id);
+    }
+  };
+
+  return (
+    <button
+      title="Remove chat"
+      onClick={handleDelete}
+      className="text-red-500 hover:text-red-700 transition-colors"
+    >
+      <Trash2 className="size-5" />
+    </button>
   );
 };
 

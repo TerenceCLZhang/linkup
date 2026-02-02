@@ -3,6 +3,7 @@ import { protectRoute } from "../middleware/auth/protectRoute.js";
 import {
   createChat,
   createGroupChat,
+  deleteChat,
   getChatDetails,
   getUserChats,
   removeGroupChatUser,
@@ -25,6 +26,7 @@ router.patch("/group-chat/update/:chatId", protectRoute, updateGroupChat);
 router.patch("/group-chat/image/:chatId", protectRoute, updateGroupChatImage);
 router.patch("/group-chat/remove/:chatId", protectRoute, removeGroupChatUser);
 
+router.delete("/:chatId", protectRoute, deleteChat);
 router.patch("/view-chat/:chatId", protectRoute, viewChat);
 router.patch("/unview-chat/:chatId", protectRoute, unViewChat);
 

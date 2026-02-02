@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import Chat, { IChat } from "../models/Chat.js";
 import User from "../models/User.js";
-import { getSocketId, io } from "../config/socket.js";
+import Message, { IMessage } from "../models/Message.js";
 import cloudinary from "../config/cloudinary.js";
-import { IMessage } from "../models/Message.js";
+import { getSocketId, io } from "../config/socket.js";
 
 const MAX_MEMBERS_GROUP_CHAT = 10;
 
@@ -13,6 +13,7 @@ export const getUserChats = async (req: Request, res: Response) => {
   try {
     const chats = await Chat.find({
       users: { $elemMatch: { $eq: userId } },
+      deletedBy: { $ne: userId },
     })
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
@@ -97,6 +98,24 @@ export const createChat = async (req: Request, res: Response) => {
     });
 
     if (existingChat) {
+      if (existingChat.deletedBy.includes(userId)) {
+        existingChat.deletedBy = existingChat.deletedBy.filter(
+          (id) => !id.equals(userId),
+        );
+        await existingChat.save();
+
+        const chat = await Chat.findById(existingChat._id).populate(
+          "users",
+          "-password",
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Contact restored successfully.",
+          chat,
+        });
+      }
+
       return res
         .status(409)
         .json({ success: false, message: "Chat already created." });
@@ -114,7 +133,7 @@ export const createChat = async (req: Request, res: Response) => {
 
     const chat = await Chat.findById(newChat._id).populate(
       "users",
-      "-password"
+      "-password",
     );
 
     // Emit a socket event to the other user to add the chat
@@ -580,6 +599,49 @@ export const unViewChat = async (req: Request, res: Response) => {
     return res.json({ success: true, message: "User now not viewing chat." });
   } catch (error) {
     console.error("Error setting user to unview chat", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+export const deleteChat = async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const userId = req.user!._id;
+
+  try {
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Chat not found." });
+    }
+
+    // Verify user is part of the chat
+    if (!chat.users.some((u) => u.equals(userId))) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this chat.",
+      });
+    }
+
+    // Soft delete: add user to deletedBy array
+    if (!chat.deletedBy.includes(userId)) {
+      chat.deletedBy.push(userId);
+      await chat.save();
+    }
+
+    // Emit socket event only to the user who deleted it
+    const socketId = getSocketId(userId.toString());
+    if (socketId) {
+      io.to(socketId).emit("removeChat", { chatId });
+    }
+
+    return res.json({
+      success: true,
+      message: "Chat successfully removed from your view.",
+    });
+  } catch (error) {
+    console.error("Error deleting chat", error);
     return res.status(500).json({ success: false, message: "Server error." });
   }
 };

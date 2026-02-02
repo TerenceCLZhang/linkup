@@ -29,6 +29,7 @@ interface ChatStore {
   updateGroupChat: (name: string, emails: string[]) => Promise<void>;
   removeGroupChatUser: (email: string) => Promise<void>;
   updateGroupChatImage: (image: string) => Promise<void>;
+  deleteChat: (chatId: string) => Promise<void>;
 
   listenToMessages: () => void;
   unListenToMessages: () => void;
@@ -138,7 +139,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         {
           text,
           image,
-        }
+        },
       );
 
       if (isSoundEnabled) {
@@ -229,7 +230,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         {
           name,
           emails,
-        }
+        },
       );
 
       const updatedChat = res.data.chat;
@@ -243,7 +244,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
                 chatName: updatedChat.chatName,
                 users: updatedChat.users,
               }
-            : chat
+            : chat,
         ),
         selectedChat:
           selectedChat._id === updatedChat._id
@@ -271,7 +272,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
       const res = await axiosInstance.patch(
         `/chats/group-chat/remove/${selectedChat._id}`,
-        { email: formattedEmail }
+        { email: formattedEmail },
       );
 
       const updatedChat = res.data.chat;
@@ -282,7 +283,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         chats: get().chats.map((chat) =>
           chat._id === updatedChat._id
             ? { ...chat, users: updatedChat.users }
-            : chat
+            : chat,
         ),
         selectedChat:
           selectedChat._id === updatedChat._id
@@ -312,7 +313,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         `chats/group-chat/image/${get().selectedChat?._id}`,
         {
           image,
-        }
+        },
       );
 
       set({ selectedChat: res.data.chat });
@@ -322,6 +323,28 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       storeAPIErrors(error);
     } finally {
       set({ isUpdatingGroupChatImage: false });
+    }
+  },
+
+  deleteChat: async (chatId: string) => {
+    set({ isLoading: true });
+
+    try {
+      await axiosInstance.delete(`/chats/${chatId}`);
+
+      const { chats, selectedChat } = get();
+
+      set({
+        chats: chats.filter((chat) => chat._id !== chatId),
+        selectedChat: selectedChat?._id === chatId ? null : selectedChat,
+        messages: selectedChat?._id === chatId ? [] : get().messages,
+      });
+
+      toast.success("Chat removed successfully.");
+    } catch (error) {
+      storeAPIErrors(error);
+    } finally {
+      set({ isLoading: false });
     }
   },
 
@@ -339,7 +362,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             .map((chat) =>
               chat._id === newMessage.chat
                 ? { ...chat, latestMessage: newMessage }
-                : chat
+                : chat,
             )
             .sort((a, b) => {
               const aTime = a.latestMessage?.createdAt
@@ -411,7 +434,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
         // Update existing chat list
         let newChats = chats.map((chat) =>
-          chat._id === updatedChat._id ? { ...chat, ...updatedChat } : chat
+          chat._id === updatedChat._id ? { ...chat, ...updatedChat } : chat,
         );
 
         // Add chat if it doesn't exist

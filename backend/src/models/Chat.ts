@@ -16,6 +16,7 @@ export interface IChat extends Document {
   groupAdmin: Types.ObjectId;
   unread: Types.DocumentArray<IUnread>;
   activeUsers: Types.ObjectId[];
+  deletedBy: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,8 +52,9 @@ const chatSchema = new mongoose.Schema(
       },
     ],
     activeUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    deletedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Chat = mongoose.model<IChat>("Chat", chatSchema);
